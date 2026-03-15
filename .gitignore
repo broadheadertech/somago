@@ -45,3 +45,10 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# claude code
+.claude/
+
+# bmad
+_bmad/
+_bmad-output/
