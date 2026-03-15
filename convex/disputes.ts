@@ -1,7 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
-import { requireAuth, requireSeller, requireAdmin } from "./auth";
+import { getCurrentUser, requireMutationAuth, requireSeller, requireAdmin } from "./auth";
 import { internal } from "./_generated/api";
+import { checkRateLimit } from "./rateLimit";
 
 // ── Buyer ──────────────────────────────────────────────────────
 export const create = mutation({
@@ -16,7 +17,14 @@ export const create = mutation({
     evidence: v.optional(v.array(v.id("_storage"))),
   },
   handler: async (ctx, args) => {
-    const buyer = await requireAuth(ctx);
+    const buyer = await requireMutationAuth(ctx);
+
+    // Rate limit: max 3 disputes per hour
+    const { allowed } = await checkRateLimit(ctx, buyer._id, "createDispute", 3, 60 * 60 * 1000);
+    if (!allowed) {
+      throw new Error("You are filing disputes too quickly. Please try again later.");
+    }
+
     const order = await ctx.db.get(args.orderId);
     if (!order || order.buyerId !== buyer._id) {
       throw new Error("Order not found");
@@ -74,7 +82,9 @@ export const create = mutation({
 export const getByOrder = query({
   args: { orderId: v.id("orders") },
   handler: async (ctx, args) => {
-    const user = await requireAuth(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user) return [];
+
     const disputes = await ctx.db
       .query("disputes")
       .withIndex("by_orderId", (q) => q.eq("orderId", args.orderId))
@@ -92,10 +102,13 @@ export const getByOrder = query({
 export const listSellerDisputes = query({
   args: {},
   handler: async (ctx) => {
-    const seller = await requireSeller(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user) return [];
+    if (user.role !== "seller" && user.role !== "admin") return [];
+
     return await ctx.db
       .query("disputes")
-      .withIndex("by_sellerId", (q) => q.eq("sellerId", seller._id))
+      .withIndex("by_sellerId", (q) => q.eq("sellerId", user._id))
       .order("desc")
       .collect();
   },
@@ -145,7 +158,7 @@ export const buyerDecision = mutation({
     accept: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const buyer = await requireAuth(ctx);
+    const buyer = await requireMutationAuth(ctx);
     const dispute = await ctx.db.get(args.disputeId);
     if (!dispute || dispute.buyerId !== buyer._id) {
       throw new Error("Dispute not found");
@@ -221,7 +234,9 @@ export const autoEscalate = internalMutation({
 export const listEscalated = query({
   args: {},
   handler: async (ctx) => {
-    await requireAdmin(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user || user.role !== "admin") return [];
+
     return await ctx.db
       .query("disputes")
       .withIndex("by_status", (q) => q.eq("status", "escalated"))
@@ -244,7 +259,17 @@ export const resolve = mutation({
     const dispute = await ctx.db.get(args.disputeId);
     if (!dispute) throw new Error("Dispute not found");
 
+    // Prevent resolving already resolved/rejected disputes (idempotency)
+    if (dispute.status === "resolved" || dispute.status === "rejected") {
+      throw new Error("This dispute has already been resolved");
+    }
+
     const order = await ctx.db.get(dispute.orderId);
+
+    // Prevent duplicate refunds — check if order already refunded
+    if (args.type === "refund" && order?.paymentStatus === "refunded") {
+      throw new Error("This order has already been refunded");
+    }
 
     await ctx.db.patch(args.disputeId, {
       status: args.type === "rejected" ? "rejected" : "resolved",
@@ -293,5 +318,18 @@ export const resolve = mutation({
       details: args.reason,
       createdAt: Date.now(),
     });
+
+    // Send email to buyer
+    const buyer = await ctx.db.get(dispute.buyerId);
+    if (buyer) {
+      await ctx.scheduler.runAfter(0, internal.email.sendDisputeResolution, {
+        to: buyer.email,
+        buyerName: buyer.name,
+        orderId: dispute.orderId,
+        resolution: args.type,
+        amount: args.type === "refund" && order ? order.totalAmount : undefined,
+        reason: args.reason,
+      });
+    }
   },
 });

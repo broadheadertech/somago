@@ -4,6 +4,8 @@ import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import { ReactNode } from "react";
+import { LanguageProvider } from "@/lib/i18n";
+import { CurrencyProvider } from "@/lib/currency";
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!;
 
@@ -30,7 +32,11 @@ function ConvexWrapper({ children }: { children: ReactNode }) {
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
-      <ConvexWrapper>{children}</ConvexWrapper>
+      <ConvexWrapper>
+        <LanguageProvider>
+          <CurrencyProvider>{children}</CurrencyProvider>
+        </LanguageProvider>
+      </ConvexWrapper>
     </ClerkProvider>
   );
 }

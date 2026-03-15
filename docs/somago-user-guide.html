@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somago Platform - User Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: #1a1a1a; line-height: 1.6; padding: 40px; max-width: 900px; margin: 0 auto; }
+    @media print { body { padding: 20px; font-size: 11pt; } .no-print { display: none; } .page-break { page-break-before: always; } }
+
+    .cover { text-align: center; padding: 80px 0; border-bottom: 4px solid #059669; margin-bottom: 40px; }
+    .cover h1 { font-size: 42px; color: #059669; margin-bottom: 8px; }
+    .cover h2 { font-size: 20px; color: #6b7280; font-weight: 400; }
+    .cover .version { margin-top: 24px; font-size: 14px; color: #9ca3af; }
+    .cover .tagline { font-size: 16px; color: #374151; margin-top: 12px; }
+
+    .toc { margin-bottom: 40px; }
+    .toc h2 { font-size: 24px; color: #059669; margin-bottom: 16px; border-bottom: 2px solid #d1fae5; padding-bottom: 8px; }
+    .toc ul { list-style: none; }
+    .toc li { padding: 6px 0; border-bottom: 1px solid #f3f4f6; }
+    .toc a { text-decoration: none; color: #374151; }
+    .toc a:hover { color: #059669; }
+    .toc .section-num { display: inline-block; width: 30px; color: #059669; font-weight: 600; }
+
+    h2 { font-size: 26px; color: #059669; margin: 40px 0 16px; border-bottom: 2px solid #d1fae5; padding-bottom: 8px; }
+    h3 { font-size: 18px; color: #1f2937; margin: 24px 0 12px; }
+    h4 { font-size: 15px; color: #059669; margin: 16px 0 8px; }
+
+    p { margin-bottom: 12px; color: #374151; }
+    ul, ol { margin: 8px 0 16px 24px; color: #374151; }
+    li { margin-bottom: 6px; }
+
+    .role-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+    .role-buyer { background: #dbeafe; color: #1e40af; }
+    .role-seller { background: #d1fae5; color: #065f46; }
+    .role-admin { background: #ede9fe; color: #5b21b6; }
+
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
+    th { background: #f0fdf4; color: #065f46; text-align: left; padding: 10px 14px; border: 1px solid #d1fae5; font-weight: 600; }
+    td { padding: 10px 14px; border: 1px solid #e5e7eb; vertical-align: top; }
+    tr:nth-child(even) { background: #f9fafb; }
+
+    .feature-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin: 12px 0; }
+    .feature-card h4 { margin-top: 0; }
+
+    .route-list { font-family: 'Courier New', monospace; font-size: 13px; background: #f3f4f6; padding: 16px; border-radius: 8px; margin: 12px 0; }
+    .route-list div { padding: 3px 0; }
+
+    .stat-box { display: inline-block; background: #059669; color: white; padding: 8px 16px; border-radius: 8px; margin: 4px; font-weight: 600; font-size: 14px; }
+
+    .footer { margin-top: 60px; padding-top: 20px; border-top: 2px solid #d1fae5; text-align: center; color: #9ca3af; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Somago</h1>
+  <h2>Platform User Guide</h2>
+  <p class="tagline">Your Trusted E-Commerce Marketplace for Southeast Asia</p>
+  <p class="version">Version 1.0 &middot; March 2026</p>
+  <div style="margin-top: 32px;">
+    <span class="stat-box">52 Routes</span>
+    <span class="stat-box">3 User Roles</span>
+    <span class="stat-box">8 Phases Built</span>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#overview"><span class="section-num">1.</span> Platform Overview</a></li>
+    <li><a href="#buyer"><span class="section-num">2.</span> Buyer Features</a></li>
+    <li><a href="#seller"><span class="section-num">3.</span> Seller Features</a></li>
+    <li><a href="#admin"><span class="section-num">4.</span> Admin Features</a></li>
+    <li><a href="#shared"><span class="section-num">5.</span> Shared Features (All Users)</a></li>
+    <li><a href="#routes"><span class="section-num">6.</span> Complete Route Map</a></li>
+    <li><a href="#tech"><span class="section-num">7.</span> Technical Architecture</a></li>
+  </ul>
+</div>
+
+<!-- 1. PLATFORM OVERVIEW -->
+<h2 id="overview">1. Platform Overview</h2>
+<p>Somago is a full-stack e-commerce marketplace platform modeled after Shopee, designed for the Southeast Asian market. It connects buyers and sellers with comprehensive features for shopping, selling, and platform management.</p>
+
+<h3>User Roles</h3>
+<table>
+  <tr>
+    <th>Role</th>
+    <th>Description</th>
+    <th>Access Level</th>
+  </tr>
+  <tr>
+    <td><span class="role-badge role-buyer">Buyer</span></td>
+    <td>Shop, browse, purchase products, leave reviews, chat with sellers</td>
+    <td>Public pages + authenticated buyer features</td>
+  </tr>
+  <tr>
+    <td><span class="role-badge role-seller">Seller</span></td>
+    <td>List products, manage orders, view analytics, run promotions, go live</td>
+    <td>All buyer features + seller dashboard & tools</td>
+  </tr>
+  <tr>
+    <td><span class="role-badge role-admin">Admin</span></td>
+    <td>Manage platform, moderate content, resolve disputes, view analytics</td>
+    <td>Full platform access including admin dashboard</td>
+  </tr>
+</table>
+
+<!-- 2. BUYER FEATURES -->
+<div class="page-break"></div>
+<h2 id="buyer">2. Buyer Features</h2>
+
+<h3>2.1 Shopping & Discovery</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Home Feed</td><td>Hero banner, category grid, personalized recommendations, recently viewed products, CMS announcements & banners</td><td>/</td></tr>
+  <tr><td>Category Browsing</td><td>Browse by top-level categories and subcategories with product filtering</td><td>/categories</td></tr>
+  <tr><td>Product Search</td><td>Real-time search with autocomplete (300ms debounce), product thumbnails, prices in dropdown</td><td>/search</td></tr>
+  <tr><td>Product Detail</td><td>Multi-image gallery (swipeable, thumbnails), variants (size/color), reviews, Q&A, seller badges, share button, compare button, price drop alerts</td><td>/product/[id]</td></tr>
+  <tr><td>Flash Sales</td><td>Time-limited deals with countdown timers, stock progress bars, discount badges</td><td>/flash-sales</td></tr>
+  <tr><td>Compare Products</td><td>Side-by-side comparison of up to 3 products (image, price, rating, stock, description)</td><td>/compare</td></tr>
+  <tr><td>Social Feed</td><td>Instagram-style product posts from sellers. Like, comment, view linked products</td><td>/feed</td></tr>
+  <tr><td>Live Shopping</td><td>Watch sellers showcase products live. Real-time chat, "Buy Now" buttons, purchase announcements</td><td>/live, /live/[id]</td></tr>
+  <tr><td>Seller Storefront</td><td>View seller's shop page with products, stats, badge, follow button</td><td>/shop/[sellerId]</td></tr>
+</table>
+
+<h3>2.2 Shopping Cart & Checkout</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th></tr>
+  <tr><td>Shopping Cart</td><td>Add/remove items, quantity controls (min 1, shows delete at 1), product images, variant display, real-time cart badge on nav</td></tr>
+  <tr><td>Wishlist</td><td>Save products for later, heart toggle with toast feedback</td></tr>
+  <tr><td>Checkout Flow</td><td>3-step: Address &rarr; Payment &rarr; Confirm. Shows subtotal, shipping, tax (VAT 12%), voucher discount, final total</td></tr>
+  <tr><td>Payment Methods</td><td>Cash on Delivery, GCash, Maya, Credit/Debit Card, Somago Balance</td></tr>
+  <tr><td>Voucher Codes</td><td>Enter voucher code at checkout for fixed or percentage discounts. Real-time validation</td></tr>
+  <tr><td>Shipping Calculator</td><td>Zone-based: Metro Manila (&#8369;50), Luzon (&#8369;80), Visayas (&#8369;100), Mindanao (&#8369;120). Free shipping above &#8369;999</td></tr>
+  <tr><td>"Buy Now" Button</td><td>Adds to cart and redirects directly to checkout</td></tr>
+</table>
+
+<h3>2.3 Orders & After-Sales</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th></tr>
+  <tr><td>Order History</td><td>Filter tabs: All, Pending, Shipped, Delivered, Cancelled. Shows order ID, date, items, total</td></tr>
+  <tr><td>Order Tracking</td><td>Visual 5-step delivery timeline (Warehouse &rarr; Sorting &rarr; Hub &rarr; Out for Delivery &rarr; Delivered). Carrier info, estimated delivery</td></tr>
+  <tr><td>Order Cancellation</td><td>Cancel pending/confirmed orders. Auto-restores stock. Refunds balance payments</td></tr>
+  <tr><td>Invoice Download</td><td>Download HTML invoice with Somago branding, item table, totals, payment info</td></tr>
+  <tr><td>Product Reviews</td><td>Star rating (1-5), text review, optional photo/video. Verified purchase badge. Rate-limited (10/hr)</td></tr>
+  <tr><td>Report Issues</td><td>Report: damaged, wrong item, not received. Upload evidence photos. Auto-escalation after 48 hours</td></tr>
+  <tr><td>Request Returns</td><td>Request return for delivered orders. Seller approves &rarr; ship back &rarr; refund to balance</td></tr>
+  <tr><td>Reorder</td><td>One-click reorder from delivered/cancelled orders</td></tr>
+</table>
+
+<h3>2.4 Account & Engagement</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th></tr>
+  <tr><td>Somago Balance</td><td>In-app wallet for refunds. Can pay full orders with balance</td></tr>
+  <tr><td>Loyalty Points</td><td>Earn 1 point per &#8369;10 spent. Redeem 100 points = &#8369;10 balance</td></tr>
+  <tr><td>Referral Program</td><td>Share referral code. Both get &#8369;50 balance on friend's first order</td></tr>
+  <tr><td>Daily Check-In</td><td>Earn coins daily (5-50 based on streak). Spin-the-wheel costs 10 coins for prizes</td></tr>
+  <tr><td>Price Drop Alerts</td><td>Set target price on products. Notified when price drops below target</td></tr>
+  <tr><td>Follow Sellers</td><td>Follow favorite shops. See follower count on storefront</td></tr>
+  <tr><td>Live Chat</td><td>Real-time messaging with sellers. Start from product page. Message history</td></tr>
+  <tr><td>Product Q&A</td><td>Ask questions on product pages. Sellers answer. Community knowledge base</td></tr>
+  <tr><td>Support Tickets</td><td>Submit help tickets (order, payment, account, product). Threaded messages</td></tr>
+  <tr><td>Notifications</td><td>In-app notification center. Unread badge. Clickable &rarr; navigates to relevant page</td></tr>
+</table>
+
+<!-- 3. SELLER FEATURES -->
+<div class="page-break"></div>
+<h2 id="seller">3. Seller Features</h2>
+<p><span class="role-badge role-seller">Seller</span> All buyer features plus the following seller-specific tools:</p>
+
+<h3>3.1 Getting Started</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Seller Application</td><td>Apply with shop name, business type, government ID upload. Admin reviews within 24 hours</td><td>/sell</td></tr>
+  <tr><td>Seller Dashboard</td><td>Overview: greeting, stat cards (today's sales, pending orders, products), recent orders, low-stock alerts</td><td>/seller/dashboard</td></tr>
+</table>
+
+<h3>3.2 Product Management</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Add Product (Wizard)</td><td>4-step: Photos (up to 10, upload or URL) &rarr; Details (name, category, description, variants) &rarr; Pricing (price, stock, commission preview) &rarr; Review & Publish</td><td>/seller/products/new</td></tr>
+  <tr><td>Edit Product</td><td>Update all fields: photos, name, description, category, price, stock, variants</td><td>/seller/products/[id]</td></tr>
+  <tr><td>Product List</td><td>All products with images, prices, stock (inline editing), sold count, status badges. Low-stock warnings</td><td>/seller/products</td></tr>
+  <tr><td>Bulk Price Editor</td><td>Edit prices and stock for multiple products at once in a table view</td><td>/seller/products/bulk-edit</td></tr>
+  <tr><td>CSV Import</td><td>Upload CSV to bulk-create products. Preview, validate, batch import (max 50/batch)</td><td>/seller/products/import</td></tr>
+  <tr><td>Product Variants</td><td>Size x Color matrix. Per-option price and stock. Multiple variant types</td><td>(within product wizard)</td></tr>
+</table>
+
+<h3>3.3 Order Management</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Order Pipeline</td><td>View orders by status: New &rarr; Confirmed &rarr; Packed &rarr; Shipped. Confirm, pack, ship with tracking number</td><td>/seller/orders</td></tr>
+  <tr><td>Shipping</td><td>Create shipment with carrier selection (J&T, LBC, Grab Express). Auto-generated tracking numbers</td><td>(within orders)</td></tr>
+  <tr><td>Returns Management</td><td>View return requests, approve returns, mark as received, process refunds</td><td>(within orders)</td></tr>
+</table>
+
+<h3>3.4 Analytics & Finance</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Sales Analytics</td><td>Revenue chart (7 days), top products, total revenue, net earnings, commission breakdown</td><td>/seller/analytics</td></tr>
+  <tr><td>Export CSV</td><td>Download sales report: Order ID, Date, Product, Qty, Amount, Commission, Net</td><td>(within analytics)</td></tr>
+  <tr><td>Payout Dashboard</td><td>Pending earnings, total paid, commission deducted. Request payout (min &#8369;500)</td><td>/seller/payouts</td></tr>
+</table>
+
+<h3>3.5 Marketing & Engagement</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Shop Vouchers</td><td>Create shop-specific vouchers (fixed/%, limits, expiry). Manage active/inactive</td><td>/seller/vouchers</td></tr>
+  <tr><td>Promoted Listings</td><td>Create ad campaigns: set budget, cost-per-click, dates. Track impressions, clicks, CTR, spend</td><td>/seller/promotions</td></tr>
+  <tr><td>Social Posts</td><td>Create product showcase posts with text, images, videos. Link to products</td><td>/feed</td></tr>
+  <tr><td>Live Selling</td><td>Go live with featured products. Real-time viewer chat. Purchase announcements</td><td>/live</td></tr>
+  <tr><td>Chat Auto-Reply</td><td>Set automatic reply message for when you're away. Enable/disable toggle</td><td>(in account settings)</td></tr>
+  <tr><td>Inventory Alerts</td><td>Set low-stock threshold (default 5). Notified when product stock drops below threshold</td><td>(in account settings)</td></tr>
+</table>
+
+<!-- 4. ADMIN FEATURES -->
+<div class="page-break"></div>
+<h2 id="admin">4. Admin Features</h2>
+<p><span class="role-badge role-admin">Admin</span> Full platform access including all buyer and seller features plus:</p>
+
+<h3>4.1 Dashboard & Monitoring</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Admin Dashboard</td><td>Priority queue (disputes &rarr; flagged products &rarr; seller applications). Alert cards. Platform stats: GMV, users, buyers, sellers, orders</td><td>/admin/dashboard</td></tr>
+  <tr><td>Platform Analytics</td><td>Total GMV, active users, transaction volume, top categories. Real-time via Convex subscriptions</td><td>(within dashboard)</td></tr>
+</table>
+
+<h3>4.2 User & Seller Management</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>User Management</td><td>Searchable user table with role badges, status (Active/Suspended/Strikes), join date</td><td>/admin/users</td></tr>
+  <tr><td>Seller Applications</td><td>Review, approve, reject seller applications. Batch approve (max 50). View business details and ID</td><td>/admin/sellers</td></tr>
+  <tr><td>Seller Strikes</td><td>Issue strikes with reason. 3 strikes = account suspension. Notification to seller</td><td>(within user management)</td></tr>
+</table>
+
+<h3>4.3 Content Moderation</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Product Moderation</td><td>Review flagged products. Warn seller (48hr correction), remove listing + strike, or approve</td><td>/admin/moderation</td></tr>
+  <tr><td>Review Moderation</td><td>Review flagged reviews. Approve or remove. Updates product rating on removal</td><td>(within moderation)</td></tr>
+  <tr><td>Content Management</td><td>Create/edit banners, announcements, sections for homepage. Toggle active/inactive. Set display order</td><td>/admin/content</td></tr>
+</table>
+
+<h3>4.4 Disputes & Support</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Dispute Resolution</td><td>View escalated disputes. Approve refund (credits buyer balance), replacement, or reject with reason. Auto-escalation after 48 hours</td><td>/admin/disputes</td></tr>
+  <tr><td>Support Tickets</td><td>View all customer tickets. Reply to messages. Change status (In Progress, Resolved, Closed). Priority filtering</td><td>/admin/support</td></tr>
+  <tr><td>Fraud Detection</td><td>Auto-flags: high-value orders (&gt;&#8369;50k), rapid ordering (&gt;5/hr), shared addresses. Investigate or dismiss</td><td>/admin/fraud</td></tr>
+</table>
+
+<h3>4.5 Platform Operations</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Page</th></tr>
+  <tr><td>Voucher Management</td><td>Create platform-wide vouchers (fixed/%). Set limits, expiry, min order. View usage stats. Toggle active</td><td>/admin/vouchers</td></tr>
+  <tr><td>Flash Sales</td><td>Create flash sales: select product, set sale price, dates, stock limit. Toggle active. View stats</td><td>/admin/flash-sales</td></tr>
+  <tr><td>Audit Log</td><td>View all admin actions: timestamp, admin name, action type, target, details</td><td>/admin/audit-log</td></tr>
+</table>
+
+<!-- 5. SHARED FEATURES -->
+<div class="page-break"></div>
+<h2 id="shared">5. Shared Features (All Users)</h2>
+
+<h3>5.1 Authentication & Profile</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th></tr>
+  <tr><td>Sign In / Sign Up</td><td>Clerk-powered: phone (OTP), email, Google, Facebook. Auto-creates Convex user on first login</td></tr>
+  <tr><td>Profile</td><td>Name, avatar, role badge. Address management (add/remove, set default)</td></tr>
+  <tr><td>Language Switcher</td><td>3 languages: English, Filipino, Bahasa Indonesia. Persists to localStorage</td></tr>
+  <tr><td>Currency Switcher</td><td>3 currencies: PHP (&#8369;), USD ($), IDR (Rp). Exchange rates applied globally</td></tr>
+</table>
+
+<h3>5.2 Communication</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th></tr>
+  <tr><td>Live Chat</td><td>Real-time buyer-seller messaging. Conversation list, date-grouped messages, auto-scroll, mark-as-read. Seller auto-reply support</td></tr>
+  <tr><td>Notifications</td><td>Order updates, dispute status, new orders, low stock, system alerts. Unread badge on header + bell icon. Click to navigate</td></tr>
+  <tr><td>Email Notifications</td><td>Via Resend: order confirmation, status updates, seller approval, dispute resolution. HTML-escaped, branded templates</td></tr>
+</table>
+
+<h3>5.3 Security & Safety</h3>
+<table>
+  <tr><th>Feature</th><th>Description</th></tr>
+  <tr><td>Server-Side Price Validation</td><td>All prices verified against database during checkout. Prevents price tampering</td></tr>
+  <tr><td>Role-Based Access</td><td>AuthGuard on all seller/admin pages. Backend enforces role on every mutation</td></tr>
+  <tr><td>Rate Limiting</td><td>Chat: 30/min. Reviews: 10/hr. Disputes: 3/hr. Sliding window with auto-reset</td></tr>
+  <tr><td>XSS Prevention</td><td>HTML escaping on emails, invoices, user-generated content. URL validation (http/https only)</td></tr>
+  <tr><td>Fraud Detection</td><td>Auto-checks on order creation: high value, rapid ordering, shared addresses</td></tr>
+  <tr><td>Duplicate Refund Prevention</td><td>Idempotency checks on disputes, vouchers, loyalty points</td></tr>
+</table>
+
+<!-- 6. ROUTE MAP -->
+<div class="page-break"></div>
+<h2 id="routes">6. Complete Route Map (52 Routes)</h2>
+
+<h3>Public Pages</h3>
+<div class="route-list">
+  <div>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Home page (hero, categories, recommendations, feed)</div>
+  <div>/categories&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Browse categories with subcategory filtering</div>
+  <div>/search&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product search with autocomplete</div>
+  <div>/product/[id]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product detail (gallery, variants, reviews, Q&A)</div>
+  <div>/flash-sales&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Flash deals with countdown timers</div>
+  <div>/compare&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Side-by-side product comparison</div>
+  <div>/feed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Social product feed</div>
+  <div>/live&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Live selling rooms listing</div>
+  <div>/live/[id]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Live room viewer</div>
+  <div>/shop/[sellerId]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Seller storefront</div>
+  <div>/track&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Public shipment tracking</div>
+  <div>/sign-in&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Clerk sign-in</div>
+  <div>/sign-up&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Clerk sign-up</div>
+  <div>/sitemap.xml&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SEO sitemap</div>
+  <div>/robots.txt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SEO robots</div>
+</div>
+
+<h3>Buyer Pages (Auth Required)</h3>
+<div class="route-list">
+  <div>/cart&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shopping cart</div>
+  <div>/wishlist&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Saved products</div>
+  <div>/checkout&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3-step checkout flow</div>
+  <div>/orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Order history with filter tabs</div>
+  <div>/orders/[id]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Order detail + tracking + invoice</div>
+  <div>/notifications&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Notification center</div>
+  <div>/account&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Profile, addresses, balance, points, referrals, alerts</div>
+  <div>/chat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Conversation list</div>
+  <div>/chat/[id]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chat room</div>
+  <div>/support&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Support tickets</div>
+  <div>/rewards&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Daily check-in + spin wheel</div>
+  <div>/sell&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Seller application</div>
+</div>
+
+<h3>Seller Pages (Seller Role Required)</h3>
+<div class="route-list">
+  <div>/seller/dashboard&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Overview + low-stock alerts</div>
+  <div>/seller/products&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product list with inline stock editing</div>
+  <div>/seller/products/new&nbsp;&nbsp;&nbsp;&nbsp;4-step product wizard</div>
+  <div>/seller/products/[id]&nbsp;&nbsp;&nbsp;Edit product</div>
+  <div>/seller/products/bulk-edit Bulk price/stock editor</div>
+  <div>/seller/products/import&nbsp;&nbsp;CSV bulk import</div>
+  <div>/seller/orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Order fulfillment pipeline</div>
+  <div>/seller/analytics&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sales analytics + CSV export</div>
+  <div>/seller/payouts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Payout dashboard</div>
+  <div>/seller/vouchers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shop voucher management</div>
+  <div>/seller/promotions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Promoted listings / ads</div>
+</div>
+
+<h3>Admin Pages (Admin Role Required)</h3>
+<div class="route-list">
+  <div>/admin/dashboard&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Priority queue + platform stats</div>
+  <div>/admin/users&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User management + strikes</div>
+  <div>/admin/sellers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Seller application review + batch approve</div>
+  <div>/admin/moderation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product + review moderation</div>
+  <div>/admin/disputes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Escalated dispute resolution</div>
+  <div>/admin/vouchers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Platform voucher management</div>
+  <div>/admin/flash-sales&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Flash sale management</div>
+  <div>/admin/content&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CMS (banners, announcements)</div>
+  <div>/admin/fraud&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fraud detection dashboard</div>
+  <div>/admin/support&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Customer support tickets</div>
+  <div>/admin/audit-log&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Admin action audit trail</div>
+</div>
+
+<h3>API Routes</h3>
+<div class="route-list">
+  <div>/api/webhooks/clerk&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Clerk user sync webhook</div>
+  <div>/api/invoice/[orderId]&nbsp;&nbsp;Invoice HTML download</div>
+</div>
+
+<!-- 7. TECHNICAL ARCHITECTURE -->
+<div class="page-break"></div>
+<h2 id="tech">7. Technical Architecture</h2>
+
+<h3>Tech Stack</h3>
+<table>
+  <tr><th>Layer</th><th>Technology</th></tr>
+  <tr><td>Frontend</td><td>Next.js 16 (App Router) + React + TypeScript</td></tr>
+  <tr><td>Styling</td><td>Tailwind CSS + shadcn/ui (Radix primitives)</td></tr>
+  <tr><td>Backend</td><td>Convex (real-time database + server functions)</td></tr>
+  <tr><td>Authentication</td><td>Clerk (phone OTP, email, social auth)</td></tr>
+  <tr><td>Email</td><td>Resend (transactional emails)</td></tr>
+  <tr><td>Deployment</td><td>Vercel (web) + Convex Cloud (backend)</td></tr>
+</table>
+
+<h3>Database Tables (28 tables)</h3>
+<table>
+  <tr><th>Category</th><th>Tables</th></tr>
+  <tr><td>Core</td><td>users, categories, products</td></tr>
+  <tr><td>Commerce</td><td>cart, orders, wishlist, reviews, disputes, returns, shipments, payouts</td></tr>
+  <tr><td>Communication</td><td>notifications, conversations, messages, supportTickets, ticketMessages</td></tr>
+  <tr><td>Marketing</td><td>vouchers, voucherUsage, flashSales, promotedListings, posts, postLikes, postComments</td></tr>
+  <tr><td>Social</td><td>follows, liveRooms, liveMessages, productQuestions</td></tr>
+  <tr><td>Engagement</td><td>priceAlerts, dailyCheckIns, spinHistory, referrals, pointTransactions</td></tr>
+  <tr><td>Operations</td><td>fraudFlags, auditLog, paymentIntents, rateLimits, siteContent</td></tr>
+</table>
+
+<h3>Security Measures</h3>
+<ul>
+  <li>Server-side price validation on all orders</li>
+  <li>SellerId derived from product database, never trusted from client</li>
+  <li>Role-based access control (RBAC) on all mutations and pages</li>
+  <li>Rate limiting on chat (30/min), reviews (10/hr), disputes (3/hr)</li>
+  <li>XSS prevention: HTML escaping on emails, invoices, user content</li>
+  <li>URL validation: only http/https allowed for images and videos</li>
+  <li>Fraud detection: auto-flags suspicious orders</li>
+  <li>Duplicate refund prevention with idempotency checks</li>
+  <li>Voucher race condition prevention with atomic application</li>
+  <li>devSwitchRole gated behind development environment</li>
+</ul>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p><strong>Somago</strong> &mdash; Your Trusted E-Commerce Marketplace for Southeast Asia</p>
+  <p>Generated March 2026 &middot; 52 Routes &middot; 28 Database Tables &middot; 8 Phases</p>
+</div>
+
+</body>
+</html>

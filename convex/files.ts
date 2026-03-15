@@ -1,11 +1,11 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireAuth } from "./auth";
+import { requireMutationAuth } from "./auth";
 
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
-    await requireAuth(ctx);
+    await requireMutationAuth(ctx);
     return await ctx.storage.generateUploadUrl();
   },
 });

@@ -1,17 +1,18 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { requireAuth } from "./auth";
+import { getCurrentUser, requireMutationAuth } from "./auth";
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    const user = await requireAuth(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user) return [];
+
     const items = await ctx.db
       .query("cart")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .collect();
 
-    // Enrich with product data
     const enriched = await Promise.all(
       items.map(async (item) => {
         const product = await ctx.db.get(item.productId);
@@ -23,6 +24,7 @@ export const get = query({
                 name: product.name,
                 price: product.price,
                 images: product.images,
+                imageUrl: product.imageUrl,
                 stock: product.stock,
                 status: product.status,
                 sellerId: product.sellerId,
@@ -40,7 +42,9 @@ export const get = query({
 export const getCount = query({
   args: {},
   handler: async (ctx) => {
-    const user = await requireAuth(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user) return 0;
+
     const items = await ctx.db
       .query("cart")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
@@ -56,7 +60,7 @@ export const add = mutation({
     quantity: v.number(),
   },
   handler: async (ctx, args) => {
-    const user = await requireAuth(ctx);
+    const user = await requireMutationAuth(ctx);
     const product = await ctx.db.get(args.productId);
     if (!product || product.status !== "active") {
       throw new Error("Product not available");
@@ -103,7 +107,7 @@ export const updateQuantity = mutation({
     quantity: v.number(),
   },
   handler: async (ctx, args) => {
-    const user = await requireAuth(ctx);
+    const user = await requireMutationAuth(ctx);
     const item = await ctx.db.get(args.cartItemId);
     if (!item || item.userId !== user._id) {
       throw new Error("Cart item not found");
@@ -126,7 +130,7 @@ export const updateQuantity = mutation({
 export const remove = mutation({
   args: { cartItemId: v.id("cart") },
   handler: async (ctx, args) => {
-    const user = await requireAuth(ctx);
+    const user = await requireMutationAuth(ctx);
     const item = await ctx.db.get(args.cartItemId);
     if (!item || item.userId !== user._id) {
       throw new Error("Cart item not found");
@@ -138,7 +142,7 @@ export const remove = mutation({
 export const clear = mutation({
   args: {},
   handler: async (ctx) => {
-    const user = await requireAuth(ctx);
+    const user = await requireMutationAuth(ctx);
     const items = await ctx.db
       .query("cart")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))

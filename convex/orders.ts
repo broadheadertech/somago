@@ -1,12 +1,15 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { requireAuth, requireSeller, requireAdmin } from "./auth";
+import { internal } from "./_generated/api";
+import { getCurrentUser, requireMutationAuth, requireSeller, requireAdmin } from "./auth";
 
 // ── Buyer Queries ──────────────────────────────────────────────
 export const listMyOrders = query({
   args: {},
   handler: async (ctx) => {
-    const user = await requireAuth(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user) return [];
+
     return await ctx.db
       .query("orders")
       .withIndex("by_buyerId", (q) => q.eq("buyerId", user._id))
@@ -18,7 +21,9 @@ export const listMyOrders = query({
 export const getById = query({
   args: { orderId: v.id("orders") },
   handler: async (ctx, args) => {
-    const user = await requireAuth(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user) return null;
+
     const order = await ctx.db.get(args.orderId);
     if (!order) return null;
 
@@ -28,9 +33,47 @@ export const getById = query({
       order.sellerId !== user._id &&
       user.role !== "admin"
     ) {
-      throw new Error("Access denied");
+      return null;
     }
-    return order;
+
+    // Enrich items with product imageUrl
+    const enrichedItems = await Promise.all(
+      order.items.map(async (item) => {
+        const product = await ctx.db.get(item.productId);
+        return { ...item, imageUrl: product?.imageUrl };
+      })
+    );
+
+    return { ...order, items: enrichedItems };
+  },
+});
+
+export const getReviewableOrder = query({
+  args: { productId: v.id("products") },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) return null;
+
+    // Find a delivered order containing this product that hasn't been reviewed yet
+    const orders = await ctx.db
+      .query("orders")
+      .withIndex("by_buyerId", (q) => q.eq("buyerId", user._id))
+      .filter((q) => q.eq(q.field("orderStatus"), "delivered"))
+      .collect();
+
+    for (const order of orders) {
+      const hasProduct = order.items.some((item) => item.productId === args.productId);
+      if (!hasProduct) continue;
+
+      // Check if already reviewed
+      const existingReview = await ctx.db
+        .query("reviews")
+        .withIndex("by_orderId", (q) => q.eq("orderId", order._id))
+        .filter((q) => q.eq(q.field("productId"), args.productId))
+        .first();
+      if (!existingReview) return order;
+    }
+    return null;
   },
 });
 
@@ -61,18 +104,22 @@ export const create = mutation({
       v.literal("cod"),
       v.literal("gcash"),
       v.literal("maya"),
-      v.literal("card")
+      v.literal("card"),
+      v.literal("balance")
     ),
+    shippingFee: v.optional(v.number()),
+    voucherDiscount: v.optional(v.number()),
+    voucherCode: v.optional(v.string()),
+    voucherId: v.optional(v.id("vouchers")),
+    tax: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const buyer = await requireAuth(ctx);
+    const buyer = await requireMutationAuth(ctx);
 
-    const totalAmount = args.items.reduce(
-      (sum, item) => sum + item.unitPrice * item.quantity,
-      0
-    );
+    // Validate prices against DB and derive sellerId from product
+    let derivedSellerId: any = null;
+    const validatedItems = [];
 
-    // Validate stock and decrement
     for (const item of args.items) {
       const product = await ctx.db.get(item.productId);
       if (!product || product.status !== "active") {
@@ -81,27 +128,138 @@ export const create = mutation({
       if (product.stock < item.quantity) {
         throw new Error(`Not enough stock for ${item.productName}`);
       }
+
+      // Verify price matches DB (prevent price tampering)
+      const dbPrice = item.variantLabel && product.variants?.[0]?.options
+        ? (product.variants[0].options.find((o: any) => o.label === item.variantLabel)?.price ?? product.price)
+        : product.price;
+
+      if (Math.abs(item.unitPrice - dbPrice) > 0.01) {
+        throw new Error(`Price mismatch for ${product.name}. Please refresh and try again.`);
+      }
+
+      // Derive sellerId from product (don't trust client)
+      if (!derivedSellerId) {
+        derivedSellerId = product.sellerId;
+      } else if (derivedSellerId !== product.sellerId) {
+        throw new Error("All items in an order must be from the same seller");
+      }
+
+      const newStock = product.stock - item.quantity;
       await ctx.db.patch(item.productId, {
-        stock: product.stock - item.quantity,
+        stock: newStock,
         soldCount: product.soldCount + item.quantity,
       });
+
+      // Check low stock threshold and notify seller
+      const seller = await ctx.db.get(product.sellerId);
+      const threshold = seller?.lowStockThreshold ?? 5;
+      if (newStock <= threshold && newStock >= 0) {
+        await ctx.db.insert("notifications", {
+          userId: product.sellerId,
+          type: "system",
+          title: "Low Stock Alert",
+          body: `"${product.name}" is running low (${newStock} left). Restock soon!`,
+          data: { productId: item.productId },
+          isRead: false,
+          createdAt: Date.now(),
+        });
+      }
+
+      // Check and enforce flash sale stock limits
+      const flashSale = await ctx.db
+        .query("flashSales")
+        .withIndex("by_productId", (q) => q.eq("productId", item.productId))
+        .filter((q) =>
+          q.and(
+            q.eq(q.field("isActive"), true),
+            q.lte(q.field("startAt"), Date.now()),
+            q.gte(q.field("endAt"), Date.now())
+          )
+        )
+        .first();
+
+      if (flashSale) {
+        if (flashSale.stockLimit && flashSale.soldCount + item.quantity > flashSale.stockLimit) {
+          throw new Error(`Flash sale limit reached for ${product.name}`);
+        }
+        await ctx.db.patch(flashSale._id, {
+          soldCount: flashSale.soldCount + item.quantity,
+        });
+      }
+
+      validatedItems.push({ ...item, unitPrice: dbPrice });
+    }
+
+    const totalAmount = validatedItems.reduce(
+      (sum, item) => sum + item.unitPrice * item.quantity,
+      0
+    );
+
+    const shippingFee = args.shippingFee ?? 0;
+    const voucherDiscount = args.voucherDiscount ?? 0;
+    const tax = args.tax ?? 0;
+    const finalTotal = Math.max(0, totalAmount - voucherDiscount + shippingFee + tax);
+
+    // Handle balance payment
+    let paymentStatus: "pending" | "paid" | "failed" | "refunded" = "pending";
+    if (args.paymentMethod === "balance") {
+      const buyerBalance = buyer.balance ?? 0;
+      if (buyerBalance < finalTotal) {
+        throw new Error("Insufficient Somago Balance. Please choose another payment method.");
+      }
+      // Deduct from buyer balance
+      await ctx.db.patch(buyer._id, {
+        balance: buyerBalance - finalTotal,
+      });
+      paymentStatus = "paid";
     }
 
     const orderId = await ctx.db.insert("orders", {
       buyerId: buyer._id,
-      sellerId: args.sellerId,
-      items: args.items,
+      sellerId: derivedSellerId,
+      items: validatedItems,
       totalAmount,
+      shippingFee: shippingFee > 0 ? shippingFee : undefined,
+      voucherDiscount: voucherDiscount > 0 ? voucherDiscount : undefined,
+      voucherCode: args.voucherCode,
+      tax: tax > 0 ? tax : undefined,
+      finalTotal,
       shippingAddress: args.shippingAddress,
       paymentMethod: args.paymentMethod,
-      paymentStatus: args.paymentMethod === "cod" ? "pending" : "pending",
+      paymentStatus,
       orderStatus: "pending",
       createdAt: Date.now(),
     });
 
+    // Apply voucher atomically (within same mutation = same transaction)
+    if (args.voucherId && voucherDiscount > 0) {
+      const voucher = await ctx.db.get(args.voucherId);
+      if (voucher && voucher.isActive) {
+        // Check not already used by this user
+        const alreadyUsed = await ctx.db
+          .query("voucherUsage")
+          .withIndex("by_userId", (q) => q.eq("userId", buyer._id))
+          .filter((q) => q.eq(q.field("voucherId"), args.voucherId))
+          .first();
+        if (!alreadyUsed) {
+          await ctx.db.insert("voucherUsage", {
+            voucherId: args.voucherId,
+            userId: buyer._id,
+            orderId,
+            discount: voucherDiscount,
+            createdAt: Date.now(),
+          });
+          await ctx.db.patch(args.voucherId, {
+            usedCount: voucher.usedCount + 1,
+          });
+        }
+      }
+    }
+
     // Create notification for seller
     await ctx.db.insert("notifications", {
-      userId: args.sellerId,
+      userId: derivedSellerId,
       type: "new_order",
       title: "New Order!",
       body: `You received a new order for ₱${totalAmount.toLocaleString()}`,
@@ -123,7 +281,84 @@ export const create = mutation({
       }
     }
 
+    // Run fraud detection check
+    await ctx.scheduler.runAfter(0, internal.fraud.checkOrder, {
+      orderId,
+      buyerId: buyer._id,
+      totalAmount, // Item subtotal (not finalTotal) for accurate high-value detection
+      shippingAddress: args.shippingAddress,
+    });
+
+    // Send order confirmation email
+    await ctx.scheduler.runAfter(0, internal.email.sendOrderConfirmation, {
+      to: buyer.email,
+      buyerName: buyer.name,
+      orderId,
+      orderTotal: totalAmount,
+      items: args.items.map((i) => ({
+        name: i.productName,
+        quantity: i.quantity,
+        price: i.unitPrice,
+      })),
+      paymentMethod: args.paymentMethod,
+    });
+
     return orderId;
+  },
+});
+
+export const cancelOrder = mutation({
+  args: { orderId: v.id("orders") },
+  handler: async (ctx, args) => {
+    const buyer = await requireMutationAuth(ctx);
+    const order = await ctx.db.get(args.orderId);
+    if (!order) throw new Error("Order not found");
+
+    // Only the buyer who placed the order can cancel it
+    if (order.buyerId !== buyer._id) {
+      throw new Error("Access denied");
+    }
+
+    // Only cancellable if pending or confirmed
+    if (order.orderStatus !== "pending" && order.orderStatus !== "confirmed") {
+      throw new Error("This order can no longer be cancelled");
+    }
+
+    // Restore product stock
+    for (const item of order.items) {
+      const product = await ctx.db.get(item.productId);
+      if (product) {
+        await ctx.db.patch(item.productId, {
+          stock: product.stock + item.quantity,
+          soldCount: Math.max(0, product.soldCount - item.quantity),
+        });
+      }
+    }
+
+    // Refund balance if paid via Somago Balance
+    if (order.paymentMethod === "balance" && order.paymentStatus === "paid") {
+      const refundAmount = order.finalTotal ?? order.totalAmount;
+      await ctx.db.patch(buyer._id, {
+        balance: (buyer.balance ?? 0) + refundAmount,
+      });
+      await ctx.db.patch(args.orderId, {
+        orderStatus: "cancelled",
+        paymentStatus: "refunded",
+      });
+    } else {
+      await ctx.db.patch(args.orderId, { orderStatus: "cancelled" });
+    }
+
+    // Notify the seller
+    await ctx.db.insert("notifications", {
+      userId: order.sellerId,
+      type: "order_update",
+      title: "Order Cancelled",
+      body: `A buyer has cancelled order #${args.orderId.slice(-8).toUpperCase()}`,
+      data: { orderId: args.orderId },
+      isRead: false,
+      createdAt: Date.now(),
+    });
   },
 });
 
@@ -142,10 +377,13 @@ export const listSellerOrders = query({
     ),
   },
   handler: async (ctx, args) => {
-    const seller = await requireSeller(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user) return [];
+    if (user.role !== "seller" && user.role !== "admin") return [];
+
     const orders = await ctx.db
       .query("orders")
-      .withIndex("by_sellerId", (q) => q.eq("sellerId", seller._id))
+      .withIndex("by_sellerId", (q) => q.eq("sellerId", user._id))
       .order("desc")
       .collect();
 
@@ -170,7 +408,7 @@ export const updateStatus = mutation({
     trackingNumber: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await requireAuth(ctx);
+    const user = await requireMutationAuth(ctx);
     const order = await ctx.db.get(args.orderId);
     if (!order) throw new Error("Order not found");
 
@@ -193,6 +431,19 @@ export const updateStatus = mutation({
 
     await ctx.db.patch(args.orderId, updates);
 
+    // On delivery: trigger loyalty points, referral reward check
+    if (args.status === "delivered") {
+      const orderTotal = order.finalTotal ?? order.totalAmount;
+      await ctx.scheduler.runAfter(0, internal.loyalty.earnPoints, {
+        userId: order.buyerId,
+        orderId: args.orderId,
+        orderTotal,
+      });
+      await ctx.scheduler.runAfter(0, internal.referrals.checkAndReward, {
+        buyerId: order.buyerId,
+      });
+    }
+
     // Notify buyer
     const statusMessages: Record<string, string> = {
       confirmed: "Your order has been confirmed by the seller",
@@ -211,6 +462,18 @@ export const updateStatus = mutation({
       isRead: false,
       createdAt: Date.now(),
     });
+
+    // Send email to buyer
+    const buyer = await ctx.db.get(order.buyerId);
+    if (buyer) {
+      await ctx.scheduler.runAfter(0, internal.email.sendOrderStatusUpdate, {
+        to: buyer.email,
+        buyerName: buyer.name,
+        orderId: args.orderId,
+        status: args.status,
+        trackingNumber: args.trackingNumber,
+      });
+    }
   },
 });
 
@@ -229,7 +492,9 @@ export const listAll = query({
     ),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user || user.role !== "admin") return [];
+
     if (args.status) {
       return await ctx.db
         .query("orders")

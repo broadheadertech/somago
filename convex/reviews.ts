@@ -1,6 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { requireAuth, requireAdmin } from "./auth";
+import { requireMutationAuth, requireAdmin, getCurrentUser } from "./auth";
+import { checkRateLimit } from "./rateLimit";
+import { requireValidUrl } from "./utils";
 
 export const getByProduct = query({
   args: {
@@ -36,13 +38,21 @@ export const create = mutation({
     rating: v.number(),
     text: v.optional(v.string()),
     photos: v.optional(v.array(v.id("_storage"))),
+    videoUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await requireAuth(ctx);
+    const user = await requireMutationAuth(ctx);
+
+    // Rate limit: max 10 reviews per hour
+    const { allowed } = await checkRateLimit(ctx, user._id, "createReview", 10, 60 * 60 * 1000);
+    if (!allowed) {
+      throw new Error("You are posting reviews too quickly. Please try again later.");
+    }
 
     if (args.rating < 1 || args.rating > 5) {
       throw new Error("Rating must be between 1 and 5");
     }
+    requireValidUrl(args.videoUrl, "video URL");
 
     // Verify the order exists, belongs to this buyer, and is delivered
     const order = await ctx.db.get(args.orderId);
@@ -70,6 +80,7 @@ export const create = mutation({
       rating: args.rating,
       text: args.text,
       photos: args.photos,
+      videoUrl: args.videoUrl,
       isVerified: true,
       createdAt: Date.now(),
     });
@@ -94,7 +105,7 @@ export const flag = mutation({
     reason: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await requireAuth(ctx);
+    await requireMutationAuth(ctx);
     await ctx.db.patch(args.reviewId, { isFlagged: true });
   },
 });
@@ -103,7 +114,9 @@ export const flag = mutation({
 export const listFlagged = query({
   args: {},
   handler: async (ctx) => {
-    await requireAdmin(ctx);
+    const user = await getCurrentUser(ctx);
+    if (!user || user.role !== "admin") return [];
+
     const reviews = await ctx.db.query("reviews").collect();
     return reviews.filter((r) => r.isFlagged);
   },

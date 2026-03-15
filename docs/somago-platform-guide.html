@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somago Platform — Complete Feature Guide</title>
+  <style>
+    :root {
+      --green-50: #ecfdf5; --green-100: #d1fae5; --green-200: #a7f3d0;
+      --green-500: #10b981; --green-600: #059669; --green-700: #047857;
+      --green-800: #065f46; --green-900: #064e3b;
+      --teal-600: #0d9488; --teal-700: #0f766e;
+      --neutral-50: #fafaf9; --neutral-100: #f5f5f4; --neutral-200: #e7e5e4;
+      --neutral-300: #d6d3d1; --neutral-500: #78716c; --neutral-700: #44403c;
+      --neutral-900: #1c1917;
+      --orange: #f97316; --red: #ef4444; --blue: #3b82f6; --yellow: #eab308;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif; color: var(--neutral-900); line-height: 1.6; background: var(--neutral-50); }
+
+    /* Header */
+    .header { background: linear-gradient(135deg, var(--green-700), var(--green-900)); color: white; padding: 48px 32px; text-align: center; }
+    .header h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.5px; }
+    .header p { margin-top: 8px; font-size: 16px; color: var(--green-200); }
+    .header .meta { margin-top: 16px; font-size: 13px; color: var(--green-300); }
+    .header .stats { display: flex; justify-content: center; gap: 32px; margin-top: 24px; }
+    .header .stat { text-align: center; }
+    .header .stat-num { font-size: 28px; font-weight: 700; }
+    .header .stat-label { font-size: 12px; color: var(--green-200); }
+
+    /* Container */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* Tab Navigation */
+    .tab-nav { display: flex; gap: 0; background: white; border-bottom: 2px solid var(--neutral-200); position: sticky; top: 0; z-index: 100; overflow-x: auto; }
+    .tab-btn { padding: 14px 20px; font-size: 14px; font-weight: 600; color: var(--neutral-500); background: none; border: none; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .tab-btn:hover { color: var(--green-600); background: var(--green-50); }
+    .tab-btn.active { color: var(--green-700); border-bottom-color: var(--green-600); }
+
+    /* Tab Content */
+    .tab-content { display: none; padding: 32px 0; }
+    .tab-content.active { display: block; }
+
+    /* Section */
+    .section { background: white; border-radius: 12px; border: 1px solid var(--neutral-200); margin-bottom: 20px; overflow: hidden; }
+    .section-header { padding: 20px 24px; border-bottom: 1px solid var(--neutral-100); display: flex; align-items: center; gap: 12px; }
+    .section-header .icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .section-header h3 { font-size: 18px; font-weight: 700; }
+    .section-header p { font-size: 13px; color: var(--neutral-500); margin-top: 2px; }
+    .section-body { padding: 20px 24px; }
+
+    /* Feature List */
+    .feature-list { list-style: none; }
+    .feature-list li { padding: 10px 0; border-bottom: 1px solid var(--neutral-100); display: flex; gap: 12px; align-items: flex-start; }
+    .feature-list li:last-child { border-bottom: none; }
+    .feature-list .check { color: var(--green-600); font-size: 16px; margin-top: 2px; flex-shrink: 0; }
+    .feature-list .feat-name { font-weight: 600; font-size: 14px; }
+    .feature-list .feat-desc { font-size: 13px; color: var(--neutral-500); margin-top: 2px; }
+
+    /* Route table */
+    .route-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .route-table th { text-align: left; padding: 10px 12px; background: var(--neutral-50); font-weight: 600; color: var(--neutral-700); border-bottom: 2px solid var(--neutral-200); }
+    .route-table td { padding: 8px 12px; border-bottom: 1px solid var(--neutral-100); }
+    .route-table code { background: var(--neutral-100); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+    /* Badge */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: var(--green-100); color: var(--green-800); }
+    .badge-teal { background: #ccfbf1; color: var(--teal-700); }
+    .badge-orange { background: #fff7ed; color: #9a3412; }
+    .badge-blue { background: #eff6ff; color: #1e40af; }
+    .badge-red { background: #fef2f2; color: #991b1b; }
+    .badge-purple { background: #faf5ff; color: #6b21a8; }
+    .badge-yellow { background: #fefce8; color: #854d0e; }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+    /* Info card */
+    .info-card { background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: 8px; padding: 16px; }
+    .info-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .info-card p { font-size: 13px; color: var(--neutral-500); }
+
+    /* Phase chip */
+    .phase-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+    .phase-1 { background: var(--green-100); color: var(--green-800); }
+    .phase-2 { background: #ccfbf1; color: var(--teal-700); }
+    .phase-3 { background: #eff6ff; color: #1e40af; }
+
+    /* Print */
+    @media print {
+      .tab-nav { display: none; }
+      .tab-content { display: block !important; page-break-before: always; }
+      .header { padding: 24px; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>Somago</h1>
+  <p>Complete Platform Feature Guide</p>
+  <div class="meta">Version 1.0 &mdash; March 2026 &mdash; Confidential</div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">60</div><div class="stat-label">Total Routes</div></div>
+    <div class="stat"><div class="stat-num">9</div><div class="stat-label">Phases Built</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">User Roles</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Languages</div></div>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="container">
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="showTab('buyer')">Buyer Features</button>
+    <button class="tab-btn" onclick="showTab('seller')">Seller Features</button>
+    <button class="tab-btn" onclick="showTab('admin')">Admin Features</button>
+    <button class="tab-btn" onclick="showTab('social')">Social & Engagement</button>
+    <button class="tab-btn" onclick="showTab('technical')">Technical</button>
+    <button class="tab-btn" onclick="showTab('routes')">All Routes</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- OVERVIEW TAB -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="overview" class="tab-content active">
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:var(--green-100)">🏪</div>
+        <div><h3>What is Somago?</h3><p>Full-stack e-commerce marketplace for Southeast Asia</p></div>
+      </div>
+      <div class="section-body">
+        <p style="font-size:15px;color:var(--neutral-700);margin-bottom:20px">
+          Somago is a Shopee-style marketplace platform where <strong>buyers</strong> shop from thousands of products,
+          <strong>sellers</strong> manage their stores and fulfill orders, and <strong>admins</strong> oversee platform health,
+          moderation, and revenue. Built with Next.js, Convex, Clerk, and Tailwind CSS.
+        </p>
+        <div class="grid-3">
+          <div class="info-card">
+            <h4>🛒 Buyer</h4>
+            <p>Browse, search, buy, track orders, chat with sellers, leave reviews, earn rewards</p>
+          </div>
+          <div class="info-card">
+            <h4>🏬 Seller</h4>
+            <p>List products, fulfill orders, track analytics, manage vouchers, API integrations</p>
+          </div>
+          <div class="info-card">
+            <h4>🛡️ Admin</h4>
+            <p>Moderate content, manage users, review disputes, track revenue, fraud detection</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#eff6ff">⚙️</div>
+        <div><h3>Tech Stack</h3><p>Modern, scalable architecture</p></div>
+      </div>
+      <div class="section-body">
+        <div class="grid-2">
+          <div class="info-card"><h4>Frontend</h4><p>Next.js 16, React, Tailwind CSS, shadcn/ui, Plus Jakarta Sans</p></div>
+          <div class="info-card"><h4>Backend</h4><p>Convex (real-time reactive database + server functions)</p></div>
+          <div class="info-card"><h4>Authentication</h4><p>Clerk (Phone OTP, Email, Google, Facebook)</p></div>
+          <div class="info-card"><h4>Email</h4><p>Resend (transactional emails: orders, approvals, disputes)</p></div>
+          <div class="info-card"><h4>Payments</h4><p>COD, Somago Balance, Stripe (cards), PayMongo (GCash/Maya)</p></div>
+          <div class="info-card"><h4>Deployment</h4><p>Vercel (web), Convex Cloud (backend), PWA support</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fefce8">🌐</div>
+        <div><h3>Multi-Language & Multi-Currency</h3></div>
+      </div>
+      <div class="section-body">
+        <div class="grid-2">
+          <div class="info-card"><h4>Languages</h4><p>English, Filipino (Tagalog), Bahasa Indonesia — switchable from header</p></div>
+          <div class="info-card"><h4>Currencies</h4><p>PHP (₱), USD ($), IDR (Rp) — auto-converts prices platform-wide</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- BUYER TAB -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="buyer" class="tab-content">
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:var(--green-100)">🔍</div>
+        <div><h3>Product Discovery</h3><p>Find products fast</p></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Homepage Feed</div><div class="feat-desc">Hero banner, category icons, CMS banners, personalized recommendations, recently viewed, product grid</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Search with Autocomplete</div><div class="feat-desc">Instant suggestions after 2 characters (300ms debounce), product thumbnails and prices in dropdown, clear button</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Category Browsing</div><div class="feat-desc">Top-level categories with icons, subcategory filtering, 2-level depth</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Product Detail Page</div><div class="feat-desc">Multi-image gallery (swipeable with arrows/dots), variant selector (size/color pills), reviews, Q&A, recommendations</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Recently Viewed</div><div class="feat-desc">Horizontal scroll on homepage, persisted in localStorage, shows last 10 products</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">AI Recommendations</div><div class="feat-desc">"Recommended For You" based on order history categories. "You May Also Like" on product pages based on category + price range</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Product Compare</div><div class="feat-desc">Side-by-side comparison of 2-3 products (price, rating, specs)</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Flash Sales</div><div class="feat-desc">Countdown timers, discounted prices, stock progress bars, "FLASH" badges</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Somago Mall</div><div class="feat-desc">Verified brand stores with "Mall" badge, premium storefront listings</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fff7ed">🛒</div>
+        <div><h3>Shopping & Checkout</h3><p>Cart to confirmation in under 5 minutes</p></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Shopping Cart</div><div class="feat-desc">Add/remove items, quantity controls, variant display, real-time badge count on nav, server-synced</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Wishlist</div><div class="feat-desc">Heart toggle on product cards/detail, wishlist page, toast feedback</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">3-Step Checkout</div><div class="feat-desc">Address → Payment → Confirm. Default address pre-selected. Order summary with breakdown</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Payment Methods</div><div class="feat-desc">Cash on Delivery (default), Credit/Debit Card (Stripe), GCash (PayMongo), Maya (PayMongo), Somago Balance</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Voucher System</div><div class="feat-desc">Apply voucher codes at checkout, fixed or percentage discounts, min order validation</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Shipping Calculator</div><div class="feat-desc">Zone-based: Metro Manila / Luzon / Visayas / Mindanao. Free shipping above ₱999. Estimated delivery days</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Tax Calculation</div><div class="feat-desc">12% VAT calculated on subtotal before discounts</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">"Buy Now" Button</div><div class="feat-desc">Skip cart — adds item and redirects straight to checkout</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Social Sharing</div><div class="feat-desc">Share products via native share sheet (mobile) or copy-to-clipboard (desktop)</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#eff6ff">📦</div>
+        <div><h3>Orders & Tracking</h3><p>From purchase to delivery</p></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Order History</div><div class="feat-desc">Filter tabs: All / Pending / Shipped / Delivered / Cancelled. Order cards with status badges</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Order Tracking Timeline</div><div class="feat-desc">Visual timeline: Confirmed → Packed → Shipped → Out for Delivery → Delivered. Real-time updates via Convex</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Order Cancellation</div><div class="feat-desc">Cancel pending/confirmed orders. Auto-restores stock. Balance refund for wallet-paid orders</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Reorder</div><div class="feat-desc">One-click reorder adds same items back to cart</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Invoice Download</div><div class="feat-desc">HTML-rendered invoice with order details, buyer/seller info, itemized breakdown</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Returns & Refunds</div><div class="feat-desc">Submit return request with reason and evidence photos. Refund to Somago Balance</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Order Confirmation Email</div><div class="feat-desc">Transactional email via Resend with order summary and tracking link</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#faf5ff">💬</div>
+        <div><h3>Communication & Reviews</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Live Chat with Sellers</div><div class="feat-desc">Real-time messaging via Convex. Message list with unread indicators. Chat from product page or orders</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Product Reviews</div><div class="feat-desc">1-5 star rating + text + optional video URL. "Verified Purchase" badge. Aggregated on product page</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Product Q&A</div><div class="feat-desc">Ask questions on product pages. Sellers answer. Visible to all buyers</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Report Issues</div><div class="feat-desc">Report damaged/wrong/missing items with evidence photos. Auto-escalation after 48 hours</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Notification Center</div><div class="feat-desc">Bell icon with unread count. All notifications in one list. Click to navigate to relevant page</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Follow Sellers</div><div class="feat-desc">Follow/unfollow shops. See follower count on storefront</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Price Drop Alerts</div><div class="feat-desc">Set target price on wishlisted items. Get notified when price drops</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Support Tickets</div><div class="feat-desc">Submit help requests. Track ticket status (open/in-progress/resolved)</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:var(--green-100)">💰</div>
+        <div><h3>Somago Balance (Wallet)</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">In-App Balance</div><div class="feat-desc">Balance displayed on Account page. Used for checkout (must cover full order)</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Refund Credits</div><div class="feat-desc">Order cancellations and dispute resolutions credit to balance automatically</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Referral Rewards</div><div class="feat-desc">Share referral code. Both referrer and referee get ₱50 balance on first purchase</div></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SELLER TAB -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="seller" class="tab-content">
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:var(--green-100)">📊</div>
+        <div><h3>Seller Dashboard</h3><p>Your store at a glance</p></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Dashboard Overview</div><div class="feat-desc">Personal greeting, stat cards (Today's Sales, Pending Orders, Products Listed), recent orders table</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Sales Analytics</div><div class="feat-desc">7-day revenue bar chart, top products by revenue, commission breakdown, conversion metrics</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Sales Reports Export</div><div class="feat-desc">Download orders and products as CSV via /api/export</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fff7ed">📦</div>
+        <div><h3>Product Management</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">4-Step Product Wizard</div><div class="feat-desc">Photos → Details → Pricing → Review. Auto-save drafts. Celebration animation on publish</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Multi-Image Upload</div><div class="feat-desc">Upload up to 10 photos (Convex file storage) or paste image URLs. Drag to reorder. Preview before publish</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Product Variants</div><div class="feat-desc">Size × Color matrix with per-variant pricing and stock. Add/remove variant groups dynamically</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Edit Product</div><div class="feat-desc">Update any field: photos, name, description, price, variants, stock</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Inventory Management</div><div class="feat-desc">Inline stock editing. Low stock badges (yellow "Low", red "Out of Stock"). Auto-decrement on orders</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Bulk Product Import (CSV)</div><div class="feat-desc">Upload CSV with product data (name, price, stock, category). Preview before import. Error reporting</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Bulk Price Editor</div><div class="feat-desc">Select multiple products, apply percentage or fixed price changes in one operation</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Inventory Alerts</div><div class="feat-desc">Set low-stock threshold (default: 5). Get notified when stock drops below threshold</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#eff6ff">📋</div>
+        <div><h3>Order Fulfillment</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Order Pipeline</div><div class="feat-desc">View orders by status: New → Confirmed → Packed → Shipped → Completed. One-click status advancement</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Ship with Tracking</div><div class="feat-desc">Enter tracking number when marking as shipped. Buyer gets push notification</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Dispute Response</div><div class="feat-desc">View buyer complaints, offer replacement or refund. Respond within 48 hours to avoid auto-escalation</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fefce8">🏷️</div>
+        <div><h3>Marketing & Promotions</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Seller Vouchers</div><div class="feat-desc">Create shop-specific vouchers: fixed or percentage discount, min order amount, usage limits, expiry dates</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Promoted Listings</div><div class="feat-desc">Boost product visibility with daily budget. Track impressions, clicks, spend, and conversions</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Shop Storefront</div><div class="feat-desc">Custom shop page with banner, description, product categories, follower count, seller badge</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Live Selling</div><div class="feat-desc">Go live with featured products. Real-time viewer chat. "Buy Now" overlay on products during stream</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Social Feed Posts</div><div class="feat-desc">Create product showcase posts with photos/videos. Buyers like and comment</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#faf5ff">💎</div>
+        <div><h3>Subscriptions & Enterprise</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Subscription Plans</div><div class="feat-desc">Free (5% commission), Premium ₱999/mo (3%), Enterprise ₱4,999/mo (2%). Payment history</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Somago Mall Application</div><div class="feat-desc">Apply to become a verified Mall store with brand name and description. Admin approval required</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Seller Badges</div><div class="feat-desc">Dynamic badges: "New Seller" (&lt;10 sales), "Verified" (10+ sales, 4.0+ rating), "Top Seller" (100+ sales, 4.5+ rating)</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">API Keys</div><div class="feat-desc">Generate API keys with granular permissions (products, orders, inventory, analytics). Revoke anytime</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Seller Payouts</div><div class="feat-desc">Track earnings, pending payouts, commission deductions. Min ₱500 payout threshold</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Chat Auto-Reply</div><div class="feat-desc">Set away messages and FAQ quick replies for when you're offline</div></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ADMIN TAB -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="admin" class="tab-content">
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fef2f2">🛡️</div>
+        <div><h3>Admin Dashboard</h3><p>Platform command center</p></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Priority Queue</div><div class="feat-desc">Color-coded alerts: Escalated Disputes (red), Flagged Products (yellow), Seller Applications (blue), Platform Health (green)</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Platform Analytics</div><div class="feat-desc">GMV (24h/7d/30d), active users, transaction volume, top categories. All real-time via Convex</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Revenue Dashboard</div><div class="feat-desc">Commission revenue breakdown, subscription revenue, weighted avg commission rate, platform summary</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">System Health</div><div class="feat-desc">Total users, active users, open disputes, open tickets, active flash sales, live rooms count</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fff7ed">👥</div>
+        <div><h3>User & Seller Management</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">User Management</div><div class="feat-desc">Searchable data table. View, suspend, ban users. Role and status columns</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Seller Application Review</div><div class="feat-desc">Approve, reject, or request resubmission. Batch approve (up to 50). Banned seller detection</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Mall Application Review</div><div class="feat-desc">Review brand store applications. Approve/reject with admin notes</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Seller Strike System</div><div class="feat-desc">Issue strikes for policy violations. 3 strikes = account suspension. Tracked per seller</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#eff6ff">🔍</div>
+        <div><h3>Content Moderation</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Product Moderation</div><div class="feat-desc">Review flagged products. Actions: warn (48hr correction), remove + strike, approve (dismiss flag)</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Review Moderation</div><div class="feat-desc">Approve or remove flagged reviews. Audit trail for all actions</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Dispute Resolution</div><div class="feat-desc">Auto-escalated disputes (48hr timeout). Admin approves refund or rejects claim. Refund to buyer balance</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Fraud Detection</div><div class="feat-desc">Flag suspicious orders by amount, velocity, and new accounts. Review queue with risk scores</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fefce8">⚙️</div>
+        <div><h3>Platform Operations</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Platform Vouchers</div><div class="feat-desc">Create platform-wide vouchers. Fixed or percentage. Toggle active/inactive. Track usage</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Flash Sales Management</div><div class="feat-desc">Create flash sales: select product, set sale price, start/end time, stock limit</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Content Management</div><div class="feat-desc">Manage homepage banners, announcements, promotions. Publish/unpublish with scheduling</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Support Tickets</div><div class="feat-desc">View all buyer support tickets. Respond, escalate, or resolve. Priority sorting</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Audit Log</div><div class="feat-desc">All admin actions logged with timestamp, admin ID, action type, and details</div></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SOCIAL & ENGAGEMENT TAB -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="social" class="tab-content">
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#faf5ff">📱</div>
+        <div><h3>Social Commerce</h3><p>Shopee meets TikTok Shop</p></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Social Feed</div><div class="feat-desc">Instagram-style post feed. Sellers create posts with text, images, video + linked product. Buyers like and comment. Feed tab in bottom nav</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Live Selling</div><div class="feat-desc">Sellers go live with featured products. Real-time viewer chat. "Buy Now" button on products. Purchase announcements. Room scheduling</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Video Reviews</div><div class="feat-desc">Buyers add video URL to reviews. Video plays inline on product page alongside text and star rating</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Follow Sellers</div><div class="feat-desc">Follow/unfollow shops. Follower counts on storefronts. Follow button on product pages</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fefce8">🎮</div>
+        <div><h3>Gamification & Rewards</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Daily Check-In</div><div class="feat-desc">7-day streak calendar. Earn 5-50 coins per day. Streak bonuses for consecutive days</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Spin the Wheel</div><div class="feat-desc">Costs 10 coins. Prizes: coins (5-100), loyalty points (10-50), voucher codes, or "try again". CSS-animated wheel</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Loyalty Points</div><div class="feat-desc">Earn points per purchase. Redeem for discounts. Points balance displayed on account</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Referral Program</div><div class="feat-desc">Unique referral code per user. Share link. Both get ₱50 balance on referee's first purchase. Track referral count</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:var(--green-100)">💬</div>
+        <div><h3>Communication</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Real-Time Chat</div><div class="feat-desc">Buyer ↔ Seller messaging. Conversation list with last message preview. Unread indicators. Start from product page</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Seller Auto-Reply</div><div class="feat-desc">Set custom away message. Auto-responds to first message. 1-hour cooldown per buyer</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">In-App Notifications</div><div class="feat-desc">Bell icon with real-time unread count. Clickable notifications navigate to relevant page. Mark all as read</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Transactional Emails</div><div class="feat-desc">Order confirmation, status updates, seller approval, dispute resolution — all via Resend with Somago branding</div></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TECHNICAL TAB -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="technical" class="tab-content">
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#eff6ff">🔒</div>
+        <div><h3>Security</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Server-Side Price Validation</div><div class="feat-desc">All order amounts verified against database prices. Prevents client-side price tampering</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Role-Based Access Control</div><div class="feat-desc">Every Convex function validates user role. Seller functions check ownership. Admin functions check admin role</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">XSS Prevention</div><div class="feat-desc">All user content escaped in emails (escapeHtml). Invoice HTML sanitized. URL validation on all user-submitted URLs</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Rate Limiting</div><div class="feat-desc">Batch operations capped (max 50). API key limits (max 10 per seller). Spin/check-in limited to once per day</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Duplicate Prevention</div><div class="feat-desc">Idempotent refunds, duplicate subscription checks, referral one-time use</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Fraud Detection</div><div class="feat-desc">Flag high-value orders, rapid purchases from new accounts, unusual patterns</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:var(--green-100)">⚡</div>
+        <div><h3>Performance & PWA</h3></div>
+      </div>
+      <div class="section-body">
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div><div class="feat-name">Progressive Web App</div><div class="feat-desc">Installable from browser. Offline fallback page. Service worker caches static assets. App manifest with green theme</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Image Optimization</div><div class="feat-desc">Next.js Image with AVIF/WebP formats. 30-day cache TTL. Shimmer placeholders during load. Lazy loading</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Real-Time Data</div><div class="feat-desc">All data via Convex subscriptions — no manual refetch. Cart, orders, chat, notifications update instantly</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">SEO</div><div class="feat-desc">Meta tags, Open Graph, Twitter Cards, sitemap.xml, robots.txt. Product pages SSR-friendly</div></div></li>
+          <li><span class="check">✓</span><div><div class="feat-name">Error Boundary</div><div class="feat-desc">React error boundary catches crashes. Shows friendly "Something went wrong" with retry button</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fff7ed">🔌</div>
+        <div><h3>Integrations</h3></div>
+      </div>
+      <div class="section-body">
+        <div class="grid-2">
+          <div class="info-card"><h4>Clerk</h4><p>Authentication (Phone, Email, Social). User sync via webhook</p></div>
+          <div class="info-card"><h4>Convex</h4><p>Real-time backend, database, file storage, scheduled functions, cron jobs</p></div>
+          <div class="info-card"><h4>Resend</h4><p>Transactional emails (order confirmation, seller approval, disputes)</p></div>
+          <div class="info-card"><h4>Stripe</h4><p>Credit/debit card payments (wired, needs API keys)</p></div>
+          <div class="info-card"><h4>PayMongo</h4><p>GCash & Maya e-wallet payments (wired, needs API keys)</p></div>
+          <div class="info-card"><h4>Vercel</h4><p>Hosting, edge network, image optimization, preview deploys</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROUTES TAB -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="routes" class="tab-content">
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:var(--green-100)">🛒</div>
+        <div><h3>Buyer Routes</h3><p>Public and authenticated buyer pages</p></div>
+      </div>
+      <div class="section-body">
+        <table class="route-table">
+          <thead><tr><th>Route</th><th>Page</th><th>Auth</th></tr></thead>
+          <tbody>
+            <tr><td><code>/</code></td><td>Homepage — hero, categories, recommendations, products</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/categories</code></td><td>Category browsing with subcategory filter</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/search</code></td><td>Search results with filters</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/product/[id]</code></td><td>Product detail — gallery, variants, reviews, Q&A, share</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/shop/[sellerId]</code></td><td>Seller storefront with products and follow</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/mall</code></td><td>Somago Mall — verified brand stores</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/flash-sales</code></td><td>Flash deals with countdown timers</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/compare</code></td><td>Side-by-side product comparison</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/feed</code></td><td>Social feed — seller posts, likes, comments</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/live</code></td><td>Live selling rooms directory</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/live/[id]</code></td><td>Live room with chat and buy buttons</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/cart</code></td><td>Shopping cart</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/checkout</code></td><td>3-step checkout flow</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/wishlist</code></td><td>Saved products</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/orders</code></td><td>Order history with status tabs</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/orders/[id]</code></td><td>Order detail with tracking timeline</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/notifications</code></td><td>Notification center</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/account</code></td><td>Profile, addresses, balance, referral</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/chat</code></td><td>Chat conversation list</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/chat/[id]</code></td><td>Chat conversation</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/rewards</code></td><td>Daily check-in, spin wheel, loyalty</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/support</code></td><td>Submit support ticket</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/track</code></td><td>Track shipment by tracking number</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/sell</code></td><td>Seller application form</td><td><span class="badge badge-blue">Buyer</span></td></tr>
+            <tr><td><code>/sign-in</code></td><td>Clerk sign in</td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/sign-up</code></td><td>Clerk sign up</td><td><span class="badge badge-green">Public</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#ccfbf1">🏬</div>
+        <div><h3>Seller Routes</h3><p>Requires approved seller role</p></div>
+      </div>
+      <div class="section-body">
+        <table class="route-table">
+          <thead><tr><th>Route</th><th>Page</th></tr></thead>
+          <tbody>
+            <tr><td><code>/seller/dashboard</code></td><td>Seller overview — stats, recent orders</td></tr>
+            <tr><td><code>/seller/products</code></td><td>Product list with stock badges</td></tr>
+            <tr><td><code>/seller/products/new</code></td><td>4-step product creation wizard</td></tr>
+            <tr><td><code>/seller/products/[id]</code></td><td>Edit product</td></tr>
+            <tr><td><code>/seller/products/import</code></td><td>CSV bulk product import</td></tr>
+            <tr><td><code>/seller/products/bulk-edit</code></td><td>Bulk price editor</td></tr>
+            <tr><td><code>/seller/orders</code></td><td>Order fulfillment pipeline</td></tr>
+            <tr><td><code>/seller/analytics</code></td><td>Sales analytics and charts</td></tr>
+            <tr><td><code>/seller/vouchers</code></td><td>Seller voucher management</td></tr>
+            <tr><td><code>/seller/promotions</code></td><td>Promoted listings / seller ads</td></tr>
+            <tr><td><code>/seller/payouts</code></td><td>Earnings, payouts, commission ledger</td></tr>
+            <tr><td><code>/seller/subscription</code></td><td>Subscription plan management</td></tr>
+            <tr><td><code>/seller/api-keys</code></td><td>API key management</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fef2f2">🛡️</div>
+        <div><h3>Admin Routes</h3><p>Requires admin role</p></div>
+      </div>
+      <div class="section-body">
+        <table class="route-table">
+          <thead><tr><th>Route</th><th>Page</th></tr></thead>
+          <tbody>
+            <tr><td><code>/admin/dashboard</code></td><td>Platform overview + priority queue</td></tr>
+            <tr><td><code>/admin/users</code></td><td>User management (search, suspend, ban)</td></tr>
+            <tr><td><code>/admin/sellers</code></td><td>Seller application review</td></tr>
+            <tr><td><code>/admin/mall</code></td><td>Mall application review</td></tr>
+            <tr><td><code>/admin/moderation</code></td><td>Product moderation queue</td></tr>
+            <tr><td><code>/admin/disputes</code></td><td>Dispute resolution</td></tr>
+            <tr><td><code>/admin/vouchers</code></td><td>Platform voucher management</td></tr>
+            <tr><td><code>/admin/flash-sales</code></td><td>Flash sale management</td></tr>
+            <tr><td><code>/admin/content</code></td><td>CMS — banners, announcements</td></tr>
+            <tr><td><code>/admin/support</code></td><td>Support ticket management</td></tr>
+            <tr><td><code>/admin/fraud</code></td><td>Fraud detection queue</td></tr>
+            <tr><td><code>/admin/revenue</code></td><td>Revenue dashboard</td></tr>
+            <tr><td><code>/admin/health</code></td><td>System health metrics</td></tr>
+            <tr><td><code>/admin/api-keys</code></td><td>All API keys across sellers</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="icon" style="background:#fff7ed">🔌</div>
+        <div><h3>API Routes</h3></div>
+      </div>
+      <div class="section-body">
+        <table class="route-table">
+          <thead><tr><th>Route</th><th>Method</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>/api/webhooks/clerk</code></td><td>POST</td><td>Clerk webhook for user sync</td></tr>
+            <tr><td><code>/api/invoice/[orderId]</code></td><td>GET</td><td>Generate HTML invoice for order</td></tr>
+            <tr><td><code>/api/export?type=orders</code></td><td>GET</td><td>Download seller orders as CSV</td></tr>
+            <tr><td><code>/api/export?type=products</code></td><td>GET</td><td>Download seller products as CSV</td></tr>
+            <tr><td><code>/sitemap.xml</code></td><td>GET</td><td>Dynamic sitemap for SEO</td></tr>
+            <tr><td><code>/robots.txt</code></td><td>GET</td><td>Search engine crawl rules</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

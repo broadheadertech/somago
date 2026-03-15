@@ -2,9 +2,13 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
-import { api } from "@/convex/_generated/api";
+import { api, internal } from "@/convex/_generated/api";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+function getConvexClient() {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+  if (!url) throw new Error("Missing NEXT_PUBLIC_CONVEX_URL");
+  return new ConvexHttpClient(url);
+}
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -39,7 +43,7 @@ export async function POST(req: Request) {
 
   if (evt.type === "user.created" || evt.type === "user.updated") {
     const { id, email_addresses, first_name, last_name, image_url, phone_numbers } = evt.data;
-    await convex.mutation(api.users.syncUser, {
+    await getConvexClient().mutation(api.users.syncUser, {
       clerkId: id,
       email: email_addresses[0]?.email_address ?? "",
       name: [first_name, last_name].filter(Boolean).join(" ") || "User",
@@ -51,7 +55,7 @@ export async function POST(req: Request) {
   if (evt.type === "user.deleted") {
     const { id } = evt.data;
     if (id) {
-      await convex.mutation(api.users.deleteUser, { clerkId: id });
+      await getConvexClient().mutation(api.users.deleteUser, { clerkId: id });
     }
   }
 
