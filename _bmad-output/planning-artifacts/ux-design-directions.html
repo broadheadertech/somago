@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Somago — UX Design Directions</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #FAFAF9; color: #1C1917; }
+
+  /* Navigation */
+  .nav { position: sticky; top: 0; z-index: 100; background: #064E3B; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .nav h1 { color: white; font-size: 20px; font-weight: 700; }
+  .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav-tab { padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); color: white; cursor: pointer; font-size: 13px; font-weight: 500; background: transparent; transition: all 0.2s; }
+  .nav-tab:hover, .nav-tab.active { background: #10B981; border-color: #10B981; }
+
+  /* Sections */
+  .section { display: none; padding: 32px 24px; max-width: 1280px; margin: 0 auto; }
+  .section.active { display: block; }
+  .section-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .section-desc { font-size: 14px; color: #78716C; margin-bottom: 32px; }
+
+  /* Direction Cards */
+  .direction-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+
+  /* ===== DIRECTION A: Clean & Minimal ===== */
+  .dir-a .phone-frame { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.12); max-width: 375px; margin: 0 auto; }
+  .dir-a .status-bar { background: #059669; padding: 8px 16px; display: flex; justify-content: space-between; color: white; font-size: 11px; }
+  .dir-a .search-bar { padding: 12px 16px; background: #ECFDF5; }
+  .dir-a .search-input { width: 100%; padding: 10px 16px; border-radius: 9999px; border: 1px solid #D1FAE5; background: white; font-size: 14px; color: #78716C; }
+  .dir-a .categories { display: flex; gap: 16px; padding: 16px; overflow-x: auto; }
+  .dir-a .cat-item { text-align: center; min-width: 56px; }
+  .dir-a .cat-icon { width: 48px; height: 48px; border-radius: 12px; background: #D1FAE5; display: flex; align-items: center; justify-content: center; font-size: 20px; margin: 0 auto 4px; }
+  .dir-a .cat-label { font-size: 11px; color: #44403C; }
+  .dir-a .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px 16px; }
+  .dir-a .product-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #E7E5E4; }
+  .dir-a .product-img { height: 140px; background: linear-gradient(135deg, #D1FAE5, #A7F3D0); position: relative; }
+  .dir-a .product-badge { position: absolute; top: 8px; left: 8px; background: #F97316; color: white; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+  .dir-a .product-info { padding: 10px; }
+  .dir-a .product-name { font-size: 13px; color: #44403C; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .dir-a .product-price { font-size: 16px; font-weight: 700; color: #059669; }
+  .dir-a .product-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+  .dir-a .product-rating { font-size: 11px; color: #EAB308; }
+  .dir-a .product-sold { font-size: 11px; color: #78716C; }
+  .dir-a .bottom-nav { display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #E7E5E4; background: white; }
+  .dir-a .nav-item { text-align: center; font-size: 10px; color: #78716C; }
+  .dir-a .nav-item.active-tab { color: #059669; }
+  .dir-a .nav-icon { font-size: 20px; margin-bottom: 2px; }
+
+  /* ===== DIRECTION B: Bold & Vibrant ===== */
+  .dir-b .phone-frame { background: #064E3B; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 375px; margin: 0 auto; }
+  .dir-b .header { padding: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .dir-b .logo { color: #34D399; font-size: 22px; font-weight: 700; }
+  .dir-b .header-icons { display: flex; gap: 16px; color: white; font-size: 18px; }
+  .dir-b .search-bar { padding: 0 16px 16px; }
+  .dir-b .search-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: none; background: rgba(255,255,255,0.15); color: white; font-size: 14px; }
+  .dir-b .search-input::placeholder { color: rgba(255,255,255,0.5); }
+  .dir-b .banner { margin: 0 16px; border-radius: 16px; background: linear-gradient(135deg, #10B981, #059669); padding: 20px; color: white; margin-bottom: 16px; }
+  .dir-b .banner-title { font-size: 18px; font-weight: 700; }
+  .dir-b .banner-sub { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+  .dir-b .content-area { background: white; border-radius: 24px 24px 0 0; padding: 20px 16px; min-height: 300px; }
+  .dir-b .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .dir-b .section-header h3 { font-size: 16px; font-weight: 600; }
+  .dir-b .section-header a { font-size: 13px; color: #059669; text-decoration: none; }
+  .dir-b .product-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+  .dir-b .product-card { min-width: 140px; border-radius: 12px; overflow: hidden; background: #F5F5F4; }
+  .dir-b .product-img { height: 140px; background: linear-gradient(135deg, #ECFDF5, #D1FAE5); }
+  .dir-b .product-info { padding: 8px; }
+  .dir-b .product-name { font-size: 12px; color: #44403C; margin-bottom: 4px; }
+  .dir-b .product-price { font-size: 14px; font-weight: 700; color: #064E3B; }
+  .dir-b .bottom-nav { display: flex; justify-content: space-around; padding: 12px 0; background: white; border-top: 1px solid #E7E5E4; }
+  .dir-b .nav-item { text-align: center; font-size: 10px; color: #78716C; }
+  .dir-b .nav-item.active-tab { color: #10B981; }
+  .dir-b .nav-icon { font-size: 20px; margin-bottom: 2px; }
+
+  /* ===== DIRECTION C: Product Detail ===== */
+  .dir-c .phone-frame { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.12); max-width: 375px; margin: 0 auto; }
+  .dir-c .product-hero { height: 280px; background: linear-gradient(135deg, #D1FAE5, #A7F3D0, #6EE7B7); position: relative; }
+  .dir-c .back-btn { position: absolute; top: 16px; left: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .dir-c .share-btn { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .dir-c .img-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+  .dir-c .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); }
+  .dir-c .dot.active { background: white; width: 18px; border-radius: 3px; }
+  .dir-c .product-details { padding: 16px; }
+  .dir-c .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+  .dir-c .current-price { font-size: 24px; font-weight: 700; color: #059669; }
+  .dir-c .original-price { font-size: 14px; color: #D6D3D1; text-decoration: line-through; }
+  .dir-c .discount-badge { background: #FEF3C7; color: #F59E0B; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+  .dir-c .product-title { font-size: 15px; color: #44403C; line-height: 1.4; margin-bottom: 12px; }
+  .dir-c .rating-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .dir-c .stars { color: #EAB308; font-size: 13px; }
+  .dir-c .rating-text { font-size: 13px; color: #78716C; }
+  .dir-c .sold-text { font-size: 13px; color: #78716C; }
+  .dir-c .seller-row { display: flex; align-items: center; gap: 10px; padding: 12px; background: #ECFDF5; border-radius: 8px; margin-bottom: 12px; }
+  .dir-c .seller-avatar { width: 36px; height: 36px; border-radius: 50%; background: #A7F3D0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #064E3B; }
+  .dir-c .seller-name { font-size: 13px; font-weight: 600; }
+  .dir-c .seller-badge { font-size: 11px; color: #059669; }
+  .dir-c .variants { display: flex; gap: 8px; margin-bottom: 16px; }
+  .dir-c .variant-pill { padding: 6px 16px; border-radius: 9999px; border: 1px solid #E7E5E4; font-size: 13px; cursor: pointer; }
+  .dir-c .variant-pill.selected { border-color: #059669; background: #ECFDF5; color: #059669; font-weight: 600; }
+  .dir-c .sticky-cta { display: flex; gap: 12px; padding: 12px 16px; border-top: 1px solid #E7E5E4; background: white; }
+  .dir-c .btn-cart { flex: 1; padding: 14px; border-radius: 12px; border: 2px solid #059669; background: white; color: #059669; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .dir-c .btn-buy { flex: 1; padding: 14px; border-radius: 12px; border: none; background: #059669; color: white; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+  /* ===== DIRECTION D: Seller Dashboard ===== */
+  .dir-d .dashboard-frame { background: #F5F5F4; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.12); max-width: 800px; margin: 0 auto; }
+  .dir-d .dash-header { background: #0F766E; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; color: white; }
+  .dir-d .dash-logo { font-size: 18px; font-weight: 700; }
+  .dir-d .dash-user { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .dir-d .dash-avatar { width: 32px; height: 32px; border-radius: 50%; background: #34D399; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+  .dir-d .dash-body { display: flex; min-height: 400px; }
+  .dir-d .sidebar { width: 200px; background: white; padding: 16px 0; border-right: 1px solid #E7E5E4; }
+  .dir-d .sidebar-item { padding: 10px 24px; font-size: 13px; color: #78716C; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .dir-d .sidebar-item.active { color: #0F766E; background: #ECFDF5; border-right: 3px solid #0F766E; font-weight: 600; }
+  .dir-d .sidebar-icon { font-size: 16px; }
+  .dir-d .main-content { flex: 1; padding: 24px; }
+  .dir-d .greeting { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .dir-d .greeting-sub { font-size: 13px; color: #78716C; margin-bottom: 20px; }
+  .dir-d .stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .dir-d .stat-card { background: white; padding: 16px; border-radius: 12px; border: 1px solid #E7E5E4; }
+  .dir-d .stat-label { font-size: 12px; color: #78716C; margin-bottom: 4px; }
+  .dir-d .stat-value { font-size: 24px; font-weight: 700; color: #0F766E; }
+  .dir-d .stat-change { font-size: 11px; color: #22C55E; margin-top: 4px; }
+  .dir-d .orders-table { background: white; border-radius: 12px; border: 1px solid #E7E5E4; overflow: hidden; }
+  .dir-d .table-header { display: flex; padding: 12px 16px; background: #FAFAF9; border-bottom: 1px solid #E7E5E4; font-size: 12px; font-weight: 600; color: #78716C; }
+  .dir-d .table-row { display: flex; padding: 12px 16px; border-bottom: 1px solid #F5F5F4; font-size: 13px; align-items: center; }
+  .dir-d .table-row:hover { background: #ECFDF5; }
+  .dir-d .col-order { flex: 1; }
+  .dir-d .col-product { flex: 2; }
+  .dir-d .col-status { flex: 1; }
+  .dir-d .col-amount { flex: 1; text-align: right; }
+  .dir-d .status-badge { display: inline-block; padding: 2px 10px; border-radius: 9999px; font-size: 11px; font-weight: 500; }
+  .dir-d .status-new { background: #DBEAFE; color: #3B82F6; }
+  .dir-d .status-shipped { background: #D1FAE5; color: #059669; }
+  .dir-d .status-pending { background: #FEF3C7; color: #F59E0B; }
+
+  /* ===== DIRECTION E: Checkout Flow ===== */
+  .dir-e .phone-frame { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.12); max-width: 375px; margin: 0 auto; }
+  .dir-e .checkout-header { background: white; padding: 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #E7E5E4; }
+  .dir-e .checkout-back { font-size: 18px; color: #44403C; }
+  .dir-e .checkout-title { font-size: 16px; font-weight: 600; }
+  .dir-e .checkout-steps { display: flex; padding: 16px; gap: 4px; }
+  .dir-e .step { flex: 1; height: 4px; border-radius: 2px; background: #E7E5E4; }
+  .dir-e .step.done { background: #10B981; }
+  .dir-e .step.current { background: #34D399; }
+  .dir-e .checkout-body { padding: 16px; }
+  .dir-e .checkout-section { margin-bottom: 20px; }
+  .dir-e .checkout-section-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .dir-e .checkout-section-title .icon { color: #10B981; }
+  .dir-e .address-card { padding: 12px; border: 1px solid #D1FAE5; border-radius: 8px; background: #ECFDF5; }
+  .dir-e .address-name { font-size: 14px; font-weight: 600; }
+  .dir-e .address-detail { font-size: 13px; color: #78716C; margin-top: 2px; }
+  .dir-e .address-change { font-size: 12px; color: #059669; margin-top: 4px; cursor: pointer; }
+  .dir-e .item-row { display: flex; gap: 12px; padding: 12px; background: #F5F5F4; border-radius: 8px; margin-bottom: 8px; }
+  .dir-e .item-img { width: 56px; height: 56px; border-radius: 8px; background: linear-gradient(135deg, #D1FAE5, #A7F3D0); }
+  .dir-e .item-details { flex: 1; }
+  .dir-e .item-name { font-size: 13px; }
+  .dir-e .item-variant { font-size: 11px; color: #78716C; }
+  .dir-e .item-price { font-size: 14px; font-weight: 600; color: #059669; margin-top: 4px; }
+  .dir-e .payment-options { display: flex; flex-direction: column; gap: 8px; }
+  .dir-e .payment-option { padding: 12px; border: 1px solid #E7E5E4; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .dir-e .payment-option.selected { border-color: #059669; background: #ECFDF5; }
+  .dir-e .payment-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #D6D3D1; }
+  .dir-e .payment-option.selected .payment-radio { border-color: #059669; background: #059669; box-shadow: inset 0 0 0 3px white; }
+  .dir-e .payment-name { font-size: 14px; flex: 1; }
+  .dir-e .summary { background: #FAFAF9; border-radius: 12px; padding: 16px; }
+  .dir-e .summary-row { display: flex; justify-content: space-between; font-size: 13px; color: #78716C; margin-bottom: 8px; }
+  .dir-e .summary-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: #1C1917; padding-top: 8px; border-top: 1px solid #E7E5E4; }
+  .dir-e .place-order-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; background: #059669; color: white; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 16px; }
+  .dir-e .buyer-protection { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #059669; margin-top: 12px; justify-content: center; }
+
+  /* ===== DIRECTION F: Admin Dashboard ===== */
+  .dir-f .dashboard-frame { background: #134E4A; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 800px; margin: 0 auto; }
+  .dir-f .dash-topbar { padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .dir-f .dash-logo { color: #34D399; font-size: 16px; font-weight: 700; }
+  .dir-f .dash-search { padding: 6px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: white; font-size: 13px; width: 240px; }
+  .dir-f .dash-body { display: flex; }
+  .dir-f .sidebar { width: 56px; background: rgba(0,0,0,0.15); padding: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .dir-f .sidebar-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); font-size: 16px; cursor: pointer; }
+  .dir-f .sidebar-icon.active { background: rgba(16,185,129,0.2); color: #34D399; }
+  .dir-f .main-content { flex: 1; background: #F5F5F4; padding: 20px; border-radius: 16px 0 0 0; min-height: 400px; }
+  .dir-f .overview-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .dir-f .overview-date { font-size: 12px; color: #78716C; margin-bottom: 16px; }
+  .dir-f .alert-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .dir-f .alert-card { padding: 14px; border-radius: 10px; background: white; border-left: 4px solid; }
+  .dir-f .alert-card.red { border-color: #EF4444; }
+  .dir-f .alert-card.yellow { border-color: #F59E0B; }
+  .dir-f .alert-card.blue { border-color: #3B82F6; }
+  .dir-f .alert-card.green { border-color: #10B981; }
+  .dir-f .alert-count { font-size: 22px; font-weight: 700; }
+  .dir-f .alert-label { font-size: 11px; color: #78716C; }
+  .dir-f .queue-section { background: white; border-radius: 12px; padding: 16px; }
+  .dir-f .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .dir-f .queue-title { font-size: 14px; font-weight: 600; }
+  .dir-f .queue-filter { font-size: 12px; color: #059669; cursor: pointer; }
+  .dir-f .queue-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; margin-bottom: 4px; }
+  .dir-f .queue-item:hover { background: #ECFDF5; }
+  .dir-f .queue-priority { width: 8px; height: 8px; border-radius: 50%; }
+  .dir-f .queue-priority.urgent { background: #EF4444; }
+  .dir-f .queue-priority.warning { background: #F59E0B; }
+  .dir-f .queue-priority.normal { background: #3B82F6; }
+  .dir-f .queue-text { flex: 1; font-size: 13px; }
+  .dir-f .queue-time { font-size: 11px; color: #78716C; }
+  .dir-f .queue-action { padding: 4px 12px; border-radius: 6px; border: 1px solid #E7E5E4; font-size: 11px; cursor: pointer; background: white; }
+
+  /* Direction labels */
+  .direction-label { text-align: center; margin-bottom: 16px; }
+  .direction-label h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .direction-label p { font-size: 13px; color: #78716C; }
+
+  @media (max-width: 768px) {
+    .direction-grid { grid-template-columns: 1fr; }
+    .nav { flex-direction: column; gap: 12px; }
+    .nav-tabs { justify-content: center; }
+    .dir-d .dash-body, .dir-f .dash-body { flex-direction: column; }
+    .dir-d .sidebar, .dir-f .sidebar { width: 100%; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid #E7E5E4; }
+    .dir-d .stat-cards { grid-template-columns: 1fr; }
+    .dir-f .alert-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <h1>Somago Design Directions</h1>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+    <button class="nav-tab" onclick="showSection('buyer')">Buyer Screens</button>
+    <button class="nav-tab" onclick="showSection('seller')">Seller Dashboard</button>
+    <button class="nav-tab" onclick="showSection('admin')">Admin Dashboard</button>
+  </div>
+</nav>
+
+<!-- OVERVIEW -->
+<div class="section active" id="overview">
+  <h2 class="section-title">Design Direction Overview</h2>
+  <p class="section-desc">Explore Somago's visual direction across all three user roles. Green-first palette with warm grays, orange accents for deals, and teal for professional contexts.</p>
+
+  <div class="direction-grid">
+    <!-- Direction A -->
+    <div>
+      <div class="direction-label">
+        <h3>Direction A: Clean Home Feed</h3>
+        <p>Minimal, Shopee-inspired product grid with breathing room</p>
+      </div>
+      <div class="dir-a">
+        <div class="phone-frame">
+          <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="search-bar"><input class="search-input" placeholder="🔍 Search in Somago" readonly></div>
+          <div class="categories">
+            <div class="cat-item"><div class="cat-icon">👕</div><div class="cat-label">Fashion</div></div>
+            <div class="cat-item"><div class="cat-icon">📱</div><div class="cat-label">Electronics</div></div>
+            <div class="cat-item"><div class="cat-icon">🏠</div><div class="cat-label">Home</div></div>
+            <div class="cat-item"><div class="cat-icon">💄</div><div class="cat-label">Beauty</div></div>
+            <div class="cat-item"><div class="cat-icon">🎮</div><div class="cat-label">Gaming</div></div>
+          </div>
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="product-img"><span class="product-badge">-30%</span></div>
+              <div class="product-info">
+                <div class="product-name">Laptop Sleeve 14" Waterproof Case</div>
+                <div class="product-price">₱350</div>
+                <div class="product-meta"><span class="product-rating">★★★★★</span><span class="product-sold">2.1k sold</span></div>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-img"></div>
+              <div class="product-info">
+                <div class="product-name">Wireless Earbuds TWS Bluetooth 5.3</div>
+                <div class="product-price">₱499</div>
+                <div class="product-meta"><span class="product-rating">★★★★☆</span><span class="product-sold">856 sold</span></div>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-img"><span class="product-badge">FREE SHIP</span></div>
+              <div class="product-info">
+                <div class="product-name">Korean Style Tote Bag Canvas</div>
+                <div class="product-price">₱189</div>
+                <div class="product-meta"><span class="product-rating">★★★★★</span><span class="product-sold">5.2k sold</span></div>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-img"></div>
+              <div class="product-info">
+                <div class="product-name">Phone Case iPhone 15 Silicone</div>
+                <div class="product-price">₱129</div>
+                <div class="product-meta"><span class="product-rating">★★★★☆</span><span class="product-sold">1.3k sold</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item active-tab"><div class="nav-icon">🏠</div>Home</div>
+            <div class="nav-item"><div class="nav-icon">📂</div>Categories</div>
+            <div class="nav-item"><div class="nav-icon">🛒</div>Cart</div>
+            <div class="nav-item"><div class="nav-icon">📦</div>Orders</div>
+            <div class="nav-item"><div class="nav-icon">👤</div>Account</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Direction B -->
+    <div>
+      <div class="direction-label">
+        <h3>Direction B: Bold Dark Header</h3>
+        <p>Dark green header with white content area — premium marketplace feel</p>
+      </div>
+      <div class="dir-b">
+        <div class="phone-frame">
+          <div class="header">
+            <div class="logo">Somago</div>
+            <div class="header-icons">🔔 🛒</div>
+          </div>
+          <div class="search-bar"><input class="search-input" placeholder="What are you looking for?" readonly></div>
+          <div class="banner">
+            <div class="banner-title">New Arrivals 🎉</div>
+            <div class="banner-sub">Fresh finds from top sellers this week</div>
+          </div>
+          <div class="content-area">
+            <div class="section-header"><h3>Trending Now</h3><a href="#">See all →</a></div>
+            <div class="product-scroll">
+              <div class="product-card"><div class="product-img"></div><div class="product-info"><div class="product-name">Laptop Sleeve</div><div class="product-price">₱350</div></div></div>
+              <div class="product-card"><div class="product-img"></div><div class="product-info"><div class="product-name">TWS Earbuds</div><div class="product-price">₱499</div></div></div>
+              <div class="product-card"><div class="product-img"></div><div class="product-info"><div class="product-name">Canvas Bag</div><div class="product-price">₱189</div></div></div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item active-tab"><div class="nav-icon">🏠</div>Home</div>
+            <div class="nav-item"><div class="nav-icon">📂</div>Categories</div>
+            <div class="nav-item"><div class="nav-icon">🛒</div>Cart</div>
+            <div class="nav-item"><div class="nav-icon">📦</div>Orders</div>
+            <div class="nav-item"><div class="nav-icon">👤</div>Account</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BUYER SCREENS -->
+<div class="section" id="buyer">
+  <h2 class="section-title">Buyer Experience Screens</h2>
+  <p class="section-desc">Product detail page and checkout flow — the two most critical buyer screens.</p>
+
+  <div class="direction-grid">
+    <!-- Product Detail -->
+    <div>
+      <div class="direction-label">
+        <h3>Product Detail Page</h3>
+        <p>Full-width images, sticky CTA bar, trust signals prominent</p>
+      </div>
+      <div class="dir-c">
+        <div class="phone-frame">
+          <div class="product-hero">
+            <div class="back-btn">←</div>
+            <div class="share-btn">↗</div>
+            <div class="img-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>
+          <div class="product-details">
+            <div class="price-row">
+              <span class="current-price">₱350</span>
+              <span class="original-price">₱500</span>
+              <span class="discount-badge">30% OFF</span>
+            </div>
+            <div class="product-title">Laptop Sleeve 14 inch Waterproof Shockproof Case — Fits MacBook Pro, HP, Lenovo</div>
+            <div class="rating-row">
+              <span class="stars">★★★★★</span>
+              <span class="rating-text">4.8 (234 reviews)</span>
+              <span class="sold-text">2.1k sold</span>
+            </div>
+            <div class="seller-row">
+              <div class="seller-avatar">TC</div>
+              <div><div class="seller-name">TechCases PH ✓</div><div class="seller-badge">Verified Seller</div></div>
+            </div>
+            <div class="variants">
+              <div class="variant-pill selected">Black</div>
+              <div class="variant-pill">Navy</div>
+              <div class="variant-pill">Gray</div>
+            </div>
+          </div>
+          <div class="sticky-cta">
+            <button class="btn-cart">Add to Cart</button>
+            <button class="btn-buy">Buy Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout -->
+    <div>
+      <div class="direction-label">
+        <h3>Checkout Flow</h3>
+        <p>3-step progress bar, saved defaults, buyer protection visible</p>
+      </div>
+      <div class="dir-e">
+        <div class="phone-frame">
+          <div class="checkout-header">
+            <span class="checkout-back">←</span>
+            <span class="checkout-title">Checkout</span>
+          </div>
+          <div class="checkout-steps">
+            <div class="step done"></div>
+            <div class="step done"></div>
+            <div class="step current"></div>
+          </div>
+          <div class="checkout-body">
+            <div class="checkout-section">
+              <div class="checkout-section-title"><span class="icon">📍</span> Delivery Address</div>
+              <div class="address-card">
+                <div class="address-name">Maria Santos</div>
+                <div class="address-detail">Unit 4B, University Tower, Taft Ave, Manila 1004</div>
+                <div class="address-change">Change address →</div>
+              </div>
+            </div>
+            <div class="checkout-section">
+              <div class="checkout-section-title"><span class="icon">📦</span> Order Items</div>
+              <div class="item-row">
+                <div class="item-img"></div>
+                <div class="item-details">
+                  <div class="item-name">Laptop Sleeve 14" Waterproof</div>
+                  <div class="item-variant">Color: Black · Qty: 1</div>
+                  <div class="item-price">₱350</div>
+                </div>
+              </div>
+            </div>
+            <div class="checkout-section">
+              <div class="checkout-section-title"><span class="icon">💳</span> Payment Method</div>
+              <div class="payment-options">
+                <div class="payment-option selected"><div class="payment-radio"></div><span class="payment-name">Cash on Delivery (COD)</span></div>
+                <div class="payment-option"><div class="payment-radio"></div><span class="payment-name">GCash</span></div>
+                <div class="payment-option"><div class="payment-radio"></div><span class="payment-name">Credit / Debit Card</span></div>
+              </div>
+            </div>
+            <div class="summary">
+              <div class="summary-row"><span>Subtotal</span><span>₱350</span></div>
+              <div class="summary-row"><span>Shipping</span><span>₱50</span></div>
+              <div class="summary-total"><span>Total</span><span style="color:#059669">₱400</span></div>
+            </div>
+            <button class="place-order-btn">Place Order — ₱400</button>
+            <div class="buyer-protection">🛡️ Somago Buyer Protection — Money-back guarantee</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SELLER -->
+<div class="section" id="seller">
+  <h2 class="section-title">Seller Dashboard</h2>
+  <p class="section-desc">Rina's view — clean, professional, data-driven with teal color scheme.</p>
+
+  <div class="dir-d">
+    <div class="dashboard-frame">
+      <div class="dash-header">
+        <div class="dash-logo">Somago Seller Center</div>
+        <div class="dash-user"><div class="dash-avatar">R</div>Rina's Shop</div>
+      </div>
+      <div class="dash-body">
+        <div class="sidebar">
+          <div class="sidebar-item active"><span class="sidebar-icon">📊</span> Dashboard</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📦</span> Orders</div>
+          <div class="sidebar-item"><span class="sidebar-icon">🏷️</span> Products</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📈</span> Analytics</div>
+          <div class="sidebar-item"><span class="sidebar-icon">🏪</span> My Shop</div>
+          <div class="sidebar-item"><span class="sidebar-icon">⚙️</span> Settings</div>
+        </div>
+        <div class="main-content">
+          <div class="greeting">Good morning, Rina! 👋</div>
+          <div class="greeting-sub">Here's how your shop is doing today</div>
+          <div class="stat-cards">
+            <div class="stat-card">
+              <div class="stat-label">Today's Sales</div>
+              <div class="stat-value">₱4,250</div>
+              <div class="stat-change">↑ 12% vs yesterday</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Pending Orders</div>
+              <div class="stat-value" style="color:#F59E0B">3</div>
+              <div class="stat-change" style="color:#F59E0B">Action needed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Products Listed</div>
+              <div class="stat-value">24</div>
+              <div class="stat-change">2 new this week</div>
+            </div>
+          </div>
+          <div class="orders-table">
+            <div class="table-header">
+              <div class="col-order">Order ID</div>
+              <div class="col-product">Product</div>
+              <div class="col-status">Status</div>
+              <div class="col-amount">Amount</div>
+            </div>
+            <div class="table-row">
+              <div class="col-order">#SM-2847</div>
+              <div class="col-product">Embroidered Blouse (M)</div>
+              <div class="col-status"><span class="status-badge status-new">New</span></div>
+              <div class="col-amount">₱850</div>
+            </div>
+            <div class="table-row">
+              <div class="col-order">#SM-2846</div>
+              <div class="col-product">Handwoven Clutch Bag</div>
+              <div class="col-status"><span class="status-badge status-pending">To Ship</span></div>
+              <div class="col-amount">₱450</div>
+            </div>
+            <div class="table-row">
+              <div class="col-order">#SM-2843</div>
+              <div class="col-product">Beaded Earrings Set</div>
+              <div class="col-status"><span class="status-badge status-shipped">Shipped</span></div>
+              <div class="col-amount">₱280</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="section" id="admin">
+  <h2 class="section-title">Admin Dashboard</h2>
+  <p class="section-desc">Jay's view — dark theme, priority-based queue, dense information display.</p>
+
+  <div class="dir-f">
+    <div class="dashboard-frame">
+      <div class="dash-topbar">
+        <div class="dash-logo">Somago Admin</div>
+        <input class="dash-search" placeholder="⌘K Search anything..." readonly>
+        <div style="color: rgba(255,255,255,0.7); font-size: 13px;">Jay · Admin</div>
+      </div>
+      <div class="dash-body">
+        <div class="sidebar">
+          <div class="sidebar-icon active">📊</div>
+          <div class="sidebar-icon">👥</div>
+          <div class="sidebar-icon">🏷️</div>
+          <div class="sidebar-icon">📦</div>
+          <div class="sidebar-icon">⚠️</div>
+          <div class="sidebar-icon">📈</div>
+          <div class="sidebar-icon">⚙️</div>
+        </div>
+        <div class="main-content">
+          <div class="overview-title">Platform Overview</div>
+          <div class="overview-date">Monday, March 15, 2026 — Overnight Summary</div>
+          <div class="alert-cards">
+            <div class="alert-card red">
+              <div class="alert-count">2</div>
+              <div class="alert-label">Escalated Disputes</div>
+            </div>
+            <div class="alert-card yellow">
+              <div class="alert-count">3</div>
+              <div class="alert-label">Flagged Products</div>
+            </div>
+            <div class="alert-card blue">
+              <div class="alert-count">12</div>
+              <div class="alert-label">Seller Applications</div>
+            </div>
+            <div class="alert-card green">
+              <div class="alert-count">99.8%</div>
+              <div class="alert-label">Platform Uptime</div>
+            </div>
+          </div>
+          <div class="queue-section">
+            <div class="queue-header">
+              <div class="queue-title">Priority Queue</div>
+              <div class="queue-filter">Filter: All ▾</div>
+            </div>
+            <div class="queue-item">
+              <div class="queue-priority urgent"></div>
+              <div class="queue-text"><strong>Dispute #D-491</strong> — Buyer reports damaged phone case. Seller unresponsive 48hrs.</div>
+              <div class="queue-time">2h ago</div>
+              <button class="queue-action">Review</button>
+            </div>
+            <div class="queue-item">
+              <div class="queue-priority urgent"></div>
+              <div class="queue-text"><strong>Dispute #D-489</strong> — Non-delivery claim. Tracking shows delivered.</div>
+              <div class="queue-time">5h ago</div>
+              <button class="queue-action">Review</button>
+            </div>
+            <div class="queue-item">
+              <div class="queue-priority warning"></div>
+              <div class="queue-text"><strong>Flagged Product</strong> — Counterfeit branded goods reported by 3 buyers.</div>
+              <div class="queue-time">8h ago</div>
+              <button class="queue-action">Moderate</button>
+            </div>
+            <div class="queue-item">
+              <div class="queue-priority normal"></div>
+              <div class="queue-text"><strong>Seller Applications (12)</strong> — Batch review available.</div>
+              <div class="queue-time">Overnight</div>
+              <button class="queue-action">Batch Review</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

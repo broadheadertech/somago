@@ -1,0 +1,135 @@
+# generated: 2026-03-15
+# last_updated: 2026-03-15
+# project: Somago
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-15
+last_updated: 2026-03-15T23:59:00Z
+project: Somago
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: Project Foundation & Design System
+  epic-1: in-progress
+  1-1-initialize-project-foundation: done
+  1-2-configure-convex-backend-and-database-schema: done
+  1-3-set-up-ci-cd-pipeline: backlog
+  1-4-implement-design-token-system: backlog
+  1-5-implement-core-ui-components: backlog
+  1-6-implement-responsive-layout-system: backlog
+  1-7-implement-skeleton-loading-and-empty-states: backlog
+  1-8-implement-toast-notification-system: backlog
+  1-9-implement-rbac-middleware-and-auth-guards: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: User Authentication & Profiles
+  epic-2: backlog
+  2-1-buyer-registration-and-login: backlog
+  2-2-seller-registration-with-id-verification: backlog
+  2-3-password-reset: backlog
+  2-4-buyer-profile-and-address-management: backlog
+  2-5-seller-shop-profile-setup: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Product Catalog & Discovery
+  epic-3: backlog
+  3-1-category-browsing: backlog
+  3-2-product-search-with-filters: backlog
+  3-3-product-detail-page: backlog
+  3-4-product-reviews-display: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Shopping Cart, Wishlist & Checkout
+  epic-4: backlog
+  4-1-shopping-cart: backlog
+  4-2-wishlist: backlog
+  4-3-checkout-flow-with-cod: backlog
+  4-4-stripe-card-payment-integration: backlog
+  4-5-gcash-and-maya-payment-integration: backlog
+  4-6-order-history-and-reorder: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Order Management & Tracking
+  epic-5: backlog
+  5-1-buyer-order-tracking: backlog
+  5-2-seller-order-dashboard-and-fulfillment: backlog
+  5-3-admin-order-monitoring: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Seller Product Management
+  epic-6: backlog
+  6-1-product-listing-wizard: backlog
+  6-2-edit-product-listing: backlog
+  6-3-inventory-management: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Reviews, Ratings & Disputes
+  epic-7: backlog
+  7-1-submit-product-review: backlog
+  7-2-report-order-issue: backlog
+  7-3-seller-dispute-response: backlog
+  7-4-auto-escalation-and-admin-resolution: backlog
+  7-5-review-moderation: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: Seller Dashboard & Analytics
+  epic-8: backlog
+  8-1-seller-dashboard-overview: backlog
+  8-2-sales-analytics-and-reports: backlog
+  epic-8-retrospective: optional
+
+  # Epic 9: Platform Administration
+  epic-9: backlog
+  9-1-admin-dashboard-with-priority-queue: backlog
+  9-2-seller-application-review: backlog
+  9-3-product-moderation: backlog
+  9-4-user-and-seller-management: backlog
+  9-5-platform-analytics: backlog
+  epic-9-retrospective: optional
+
+  # Epic 10: Notifications & Communications
+  epic-10: backlog
+  10-1-push-notification-infrastructure: backlog
+  10-2-transactional-email-service: backlog
+  10-3-in-app-notification-center: backlog
+  epic-10-retrospective: optional
+
+  # Epic 11: Mobile App
+  epic-11: backlog
+  11-1-mobile-app-shell-and-navigation: backlog
+  11-2-mobile-buyer-experience: backlog
+  11-3-mobile-seller-experience: backlog
+  epic-11-retrospective: optional
