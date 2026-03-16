@@ -107,7 +107,7 @@ export function ProductCard({
 
       {/* Product Info */}
       <div className="flex flex-1 flex-col gap-1 p-3">
-        <h3 className="line-clamp-2 text-sm leading-snug text-neutral-800">
+        <h3 className="line-clamp-2 min-h-10 text-sm leading-snug text-neutral-800">
           {name}
         </h3>
 

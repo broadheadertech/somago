@@ -226,9 +226,9 @@ export default function Home() {
       {flashSaleProducts.length > 0 && (
         <div className="mt-5 px-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <h2 className="text-base font-bold text-neutral-900">Flash Sale</h2>
-              <CountdownTimer />
+              {flashSaleProducts.length > 0 && <CountdownTimer />}
             </div>
             <Link href="/flash-sales" className="text-xs font-semibold text-primary-600">
               See More
@@ -246,9 +246,9 @@ export default function Home() {
       {recentlyViewed && recentlyViewed.length > 0 && (
         <div className="mt-5 px-4">
           <h2 className="mb-3 text-base font-bold text-neutral-900">Recently Viewed</h2>
-          <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1">
-            {recentlyViewed.map((product) => (
-              <div key={product._id} className="min-w-[42%] max-w-[42%] shrink-0 sm:min-w-[28%] md:min-w-[22%]">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {recentlyViewed.slice(0, 6).map((product) => (
+              <div key={product._id}>
                 <ProductCard
                   id={product._id}
                   name={product.name}
