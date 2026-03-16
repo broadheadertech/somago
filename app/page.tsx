@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useRecentlyViewed } from "@/lib/recently-viewed";
 import { useState, useEffect } from "react";
+import { BannerCarousel } from "@/components/somago/banner-carousel";
 
 function CountdownTimer() {
   const [time, setTime] = useState({ hours: 2, minutes: 45, seconds: 12 });
@@ -111,34 +112,17 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── Banner ──────────────────────────────────────────── */}
+      {/* ── Banner Carousel ───────────────────────────────── */}
       <div className="px-4 pt-3">
-        {banners && banners.length > 0 ? (
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-            {banners.map((b) => (
-              <div key={b._id} className="min-w-[85%] shrink-0 overflow-hidden rounded-2xl sm:min-w-[45%]">
-                {b.imageUrl ? (
-                  <a href={b.linkUrl || "#"}><img src={b.imageUrl} alt={b.title || ""} className="h-36 w-full object-cover sm:h-44" /></a>
-                ) : (
-                  <div className="flex h-36 items-center justify-center bg-linear-to-r from-primary-400 to-primary-600 p-5 sm:h-44">
-                    <div>
-                      <p className="text-lg font-bold text-white">{b.title}</p>
-                      <p className="mt-1 text-xs text-white/80">{b.body}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="overflow-hidden rounded-2xl bg-linear-to-r from-primary-400 to-primary-600 p-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/70">Summer Sale</p>
-            <p className="mt-1 text-xl font-bold text-white">Up to 70% OFF</p>
-            <Link href="/categories" className="mt-3 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-primary-600">
-              SHOP NOW
-            </Link>
-          </div>
-        )}
+        <BannerCarousel
+          slides={(banners ?? []).map((b) => ({
+            id: b._id,
+            imageUrl: b.imageUrl,
+            title: b.title,
+            body: b.body,
+            linkUrl: b.linkUrl,
+          }))}
+        />
       </div>
 
       {/* ── Categories ─────────────────────────────────────── */}

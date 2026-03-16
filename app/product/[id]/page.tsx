@@ -105,6 +105,20 @@ export default function ProductDetailPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Variant popup state — must be before early returns
+  const [showVariantPopup, setShowVariantPopup] = useState(false);
+  const [popupMode, setPopupMode] = useState<"cart" | "buy">("cart");
+
+  // Lock body scroll when popup is open
+  useEffect(() => {
+    if (showVariantPopup) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [showVariantPopup]);
+
   // Track recently viewed product
   useEffect(() => {
     if (id) {
@@ -140,19 +154,7 @@ export default function ProductDetailPage() {
       ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
       : null;
 
-  // Variant popup state
-  const [showVariantPopup, setShowVariantPopup] = useState(false);
-  const [popupMode, setPopupMode] = useState<"cart" | "buy">("cart");
-
-  // Lock body scroll when popup is open
-  useEffect(() => {
-    if (showVariantPopup) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => { document.body.style.overflow = ""; };
-  }, [showVariantPopup]);
+  // (hooks moved above early returns)
 
   const openVariantPopup = (mode: "cart" | "buy") => {
     if (!isSignedIn) {
@@ -328,14 +330,14 @@ export default function ProductDetailPage() {
         {/* Seller Info */}
         {seller && (
           <div className="flex items-center gap-3 rounded-lg bg-neutral-50 p-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 font-semibold">
+            <Link href={`/shop/${product.sellerId}`} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 font-semibold">
               {seller.shopProfile?.shopName?.charAt(0) || seller.name.charAt(0)}
-            </div>
+            </Link>
             <div>
               <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-neutral-900">
+                <Link href={`/shop/${product.sellerId}`} className="text-sm font-medium text-neutral-900 hover:text-primary-600 hover:underline">
                   {seller.shopProfile?.shopName || seller.name}
-                </p>
+                </Link>
                 {sellerBadge?.badge === "top_seller" && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-semibold text-yellow-800">
                     <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
