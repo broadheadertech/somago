@@ -1,7 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(sed -i 's|class=\"\"eyebrow\"\"|class=\"\"eyebrow reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"hero\"\"|class=\"\"hero reveal glitch\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"title\"\"|class=\"\"title reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"section\"\"|class=\"\"section reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"body-text\"\"|class=\"\"body-text reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"card\"\"|class=\"\"card reveal tilt-card\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"value-card\"\"|class=\"\"value-card reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"pill\"\"|class=\"\"pill reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"cyber-badge\"\"|class=\"\"cyber-badge reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"gold-line\"\"|class=\"\"gold-line reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"contact-block\"\"|class=\"\"contact-block reveal\"\"|g' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"stat-num\"\">5+|class=\"\"stat-num count-up\"\" data-target=\"\"5+\"\">0|' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"stat-num\"\">24/7|class=\"\"stat-num count-up\"\" data-target=\"\"24/7\"\">0|' broadheader-presentation.html)",
+      "Bash(sed -i 's|class=\"\"stat-num\"\">PH|class=\"\"stat-num count-up\"\" data-target=\"\"PH\"\">—|' broadheader-presentation.html)",
+      "Bash(start \"\" \"c:\\\\Users\\\\JENZEN\\\\Documents\\\\Broadheader\\\\Somago\\\\somago\\\\docs\\\\broadheader-presentation.html\")"
     ]
   }
 }

@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
-import { Header } from "@/components/somago/header";
-import { BottomNav } from "@/components/somago/bottom-nav";
+import { AppShell } from "@/components/somago/app-shell";
 import { Toaster } from "@/components/ui/sonner";
-import { ErrorBoundary } from "@/components/somago/error-boundary";
-import { DevRoleSwitcher } from "@/components/somago/dev-role-switcher";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -67,33 +64,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="theme-color" content="#059669" />
+        <meta name="theme-color" content="#E11D48" />
       </head>
       <body
         className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         <Providers>
-          <Header />
-          <ErrorBoundary>
-            <main className="min-h-screen pb-16 md:pb-0">{children}</main>
-          </ErrorBoundary>
-          <BottomNav />
-          {/* <DevRoleSwitcher /> */}
+          <AppShell>{children}</AppShell>
           <Toaster position="top-center" richColors />
         </Providers>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then((reg) => { if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' }); })
-                    .catch((err) => console.warn('[SW] Registration failed:', err.message));
-                });
-              }
-            `,
-          }}
-        />
+        {/* SW disabled temporarily for auth debugging */}
       </body>
     </html>
   );

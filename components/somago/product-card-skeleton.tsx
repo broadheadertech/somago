@@ -1,20 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-interface ProductCardSkeletonProps {
-  className?: string;
-}
-
-export function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
+export function ProductCardSkeleton({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "flex flex-col overflow-hidden rounded-lg border border-border bg-card",
-        className
-      )}
-    >
+    <div className={cn("overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5", className)}>
       <Skeleton className="aspect-square w-full" />
-      <div className="flex flex-col gap-2 p-2.5">
+      <div className="space-y-2 p-3">
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-3/4" />
         <Skeleton className="h-5 w-1/2" />

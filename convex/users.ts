@@ -53,6 +53,34 @@ export const deleteUser = mutation({
   },
 });
 
+// ── Auto-create user on first login ────────────────────────────
+export const ensureUser = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (existing) return existing._id;
+
+    // Auto-create from Clerk identity
+    const userId = await ctx.db.insert("users", {
+      clerkId: identity.subject,
+      email: identity.email ?? "",
+      name: identity.name ?? identity.email?.split("@")[0] ?? "User",
+      role: "buyer",
+      avatar: identity.pictureUrl,
+      createdAt: Date.now(),
+    });
+
+    return userId;
+  },
+});
+
 // ── Queries ────────────────────────────────────────────────────
 export const getMe = query({
   args: {},

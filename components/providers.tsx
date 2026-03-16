@@ -31,7 +31,12 @@ function ConvexWrapper({ children }: { children: ReactNode }) {
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
+    >
       <ConvexWrapper>
         <LanguageProvider>
           <CurrencyProvider>{children}</CurrencyProvider>

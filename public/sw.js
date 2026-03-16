@@ -1,5 +1,5 @@
 // Somago Service Worker — App Shell Caching + Offline Fallback
-const CACHE_NAME = "somago-v2"; // Bump version to invalidate old caches
+const CACHE_NAME = "somago-v3"; // Bump version to invalidate old caches
 const APP_SHELL = [
   "/offline.html",
   "/manifest.json",
@@ -33,6 +33,9 @@ self.addEventListener("fetch", (event) => {
   // Skip non-GET requests and cross-origin
   if (request.method !== "GET") return;
   if (url.origin !== self.location.origin) return;
+
+  // Skip auth routes — NEVER interfere with Clerk
+  if (url.pathname.startsWith("/sign-in") || url.pathname.startsWith("/sign-up")) return;
 
   // Skip API calls — never cache
   if (url.pathname.startsWith("/api")) return;

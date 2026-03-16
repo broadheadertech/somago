@@ -92,6 +92,19 @@ export default function ProductDetailPage() {
   const [isSavingAlert, setIsSavingAlert] = useState(false);
   const { addToCompare, compareIds } = useCompare();
 
+  // Simulated live viewer count — fluctuates to feel real
+  const [viewerCount] = useState(() => Math.floor(Math.random() * 30) + 5);
+  const [currentViewers, setCurrentViewers] = useState(viewerCount);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentViewers((prev) => {
+        const delta = Math.floor(Math.random() * 5) - 2;
+        return Math.max(3, prev + delta);
+      });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Track recently viewed product
   useEffect(() => {
     if (id) {
@@ -210,6 +223,20 @@ export default function ProductDetailPage() {
           ].filter(Boolean)}
           alt={product.name}
         />
+      </div>
+
+      {/* Live viewers badge */}
+      <div className="mb-3 flex items-center gap-2">
+        <span className="flex items-center gap-1.5 rounded-full bg-primary-50 px-2.5 py-1">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary-500" />
+          </span>
+          <span className="text-[11px] font-medium text-primary-700">{currentViewers} people viewing this</span>
+        </span>
+        {product.soldCount > 0 && (
+          <span className="text-[11px] text-neutral-500">{product.soldCount.toLocaleString()} sold</span>
+        )}
       </div>
 
       {/* Product Info */}
